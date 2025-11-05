@@ -9,7 +9,6 @@ import type {
   LifecycleStage,
   InteractionType,
   SentimentType,
-  TagType,
 } from './types';
 import { calculateHealthScore, calculateRiskLevel, detectEngagementGaps, calculateChurnProbability } from './utils';
 

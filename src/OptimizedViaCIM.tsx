@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 // Types
 type Stage = "prospecting" | "qualification" | "demo" | "proposal" | "negotiation" | "closed";
@@ -264,7 +264,16 @@ const CommandBar = ({ value, onChange, onClear }: { value: string; onChange: (q:
   );
 };
 
-const TimelineLane = ({ stage, events, minDate, maxDate, onSelectEvent, selectedEventId, isExpanded, onToggleExpand }: any) => {
+const TimelineLane = ({ stage, events, minDate, maxDate, onSelectEvent, selectedEventId, isExpanded, onToggleExpand }: {
+  stage: Stage;
+  events: Event[];
+  minDate: number;
+  maxDate: number;
+  onSelectEvent: (event: Event) => void;
+  selectedEventId: string | null;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+}) => {
   const dateRange = maxDate - minDate;
   const getXPosition = (ts: number) => ((ts - minDate) / dateRange) * 100;
   const silenceThreshold = 5 * 24 * 60 * 60 * 1000;
@@ -338,7 +347,14 @@ const TimelineLane = ({ stage, events, minDate, maxDate, onSelectEvent, selected
   );
 };
 
-const EvidenceLocker = ({ event, onClose, onNext, onPrev, hasNext, hasPrev }: any) => {
+const EvidenceLocker = ({ event, onClose, onNext, onPrev, hasNext, hasPrev }: {
+  event: Event | null;
+  onClose: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+  hasNext: boolean;
+  hasPrev: boolean;
+}) => {
   if (!event) return null;
   const daysSince = getDaysSince(event.ts);
   
