@@ -69,117 +69,197 @@ export default function CustomerIntelligenceDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-4xl font-extrabold mb-2">VIA - Customer Journey Intelligence</h1>
-              <p className="text-lg text-blue-100">Real-time customer health & engagement monitoring</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Elegant Header */}
+      <div className="relative overflow-hidden bg-white border-b border-gray-200 shadow-elegant">
+        <div className="absolute inset-0 bg-gradient-to-r from-violet-600/5 to-indigo-600/5"></div>
+        <div className="relative max-w-7xl mx-auto px-8 py-12">
+          <div className="flex justify-between items-start">
+            <div className="space-y-2 fade-in">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Customer Intelligence</h1>
+                  <p className="text-sm text-gray-500 font-medium">Real-time health & engagement analytics</p>
+                </div>
+              </div>
             </div>
-            <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all shadow-lg">
-              📊 Export Report
-            </button>
+            <div className="flex items-center gap-3 fade-in">
+              <button className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg transition-all hover-lift flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+                Filters
+              </button>
+              <button className="px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-lg transition-all shadow-lg hover-lift flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Export Report
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* KPI Dashboard */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="max-w-7xl mx-auto px-8 py-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 fade-in">
           <KPICard
             label="At Risk Customers"
             value={metrics.atRiskCount}
-            subtitle={`/ ${metrics.totalCustomers} total`}
-            color="red"
+            subtitle={`of ${metrics.totalCustomers} total`}
+            icon="🚨"
+            gradient="from-red-500 to-rose-600"
+            iconBg="from-red-500 to-rose-600"
           />
           <KPICard
             label="Total MRR"
             value={formatCurrency(metrics.totalMRR)}
-            color="default"
+            icon="💰"
+            gradient="from-violet-500 to-indigo-600"
+            iconBg="from-violet-500 to-indigo-600"
           />
           <KPICard
             label="Avg Health Score"
             value={metrics.avgHealthScore}
-            color="green"
+            icon="💚"
+            gradient="from-emerald-500 to-green-600"
+            iconBg="from-emerald-500 to-green-600"
           />
           <KPICard
             label="Active Opportunities"
             value={metrics.activeOpportunities}
-            color="blue"
+            icon="🎯"
+            gradient="from-blue-500 to-cyan-600"
+            iconBg="from-blue-500 to-cyan-600"
           />
         </div>
 
         {/* Customer List */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white rounded-2xl shadow-elegant-lg overflow-hidden border border-gray-100">
+          <div className="p-8 border-b border-gray-100">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">Customer Portfolio</h2>
-              <input
-                type="text"
-                placeholder="Search customers..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Customer Portfolio</h2>
+                <p className="text-sm text-gray-500 mt-1">{sortedCustomers.length} customers · {metrics.atRiskCount} require attention</p>
+              </div>
+              <div className="relative">
+                <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search customers..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all bg-gray-50 hover:bg-white focus:bg-white w-72 text-sm"
+                />
+              </div>
             </div>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th className="px-8 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
                     Customer
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
                     Stage
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
                     Health
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
                     MRR
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
                     Last Contact
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Risk
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
+                    Risk Level
                   </th>
+                  <th className="px-8 py-4 bg-gray-50/50"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-100">
                 {sortedCustomers.map(customer => (
                   <tr
                     key={customer.id}
                     onClick={() => setSelectedCustomerId(customer.id)}
-                    className="hover:bg-gray-50 cursor-pointer transition-colors"
+                    className="hover:bg-gradient-to-r hover:from-violet-50/30 hover:to-transparent cursor-pointer transition-all group"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-semibold text-gray-900">{customer.name}</div>
-                      <div className="text-sm text-gray-500">{customer.assignedTo}</div>
+                    <td className="px-8 py-5 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm shadow-md ${
+                          customer.healthScore >= 80 ? 'bg-gradient-to-br from-emerald-500 to-green-600' :
+                          customer.healthScore >= 60 ? 'bg-gradient-to-br from-blue-500 to-indigo-600' :
+                          customer.healthScore >= 40 ? 'bg-gradient-to-br from-amber-500 to-orange-600' :
+                          'bg-gradient-to-br from-red-500 to-rose-600'
+                        }`}>
+                          {customer.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                        </div>
+                        <div>
+                          <div className="font-bold text-gray-900">{customer.name}</div>
+                          <div className="text-xs text-gray-500">{customer.assignedTo}</div>
+                        </div>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap capitalize">
-                      {customer.stage.replace('-', ' ')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className="text-2xl font-bold"
-                        style={{ color: getHealthScoreColor(customer.healthScore) }}
-                      >
-                        {customer.healthScore}
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 capitalize">
+                        {customer.stage.replace('-', ' ')}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {customer.mrr > 0 ? `${formatCurrency(customer.mrr)}/mo` : '-'}
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="text-3xl font-black tracking-tight"
+                          style={{ color: getHealthScoreColor(customer.healthScore) }}
+                        >
+                          {customer.healthScore}
+                        </span>
+                        <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all"
+                            style={{
+                              width: `${customer.healthScore}%`,
+                              backgroundColor: getHealthScoreColor(customer.healthScore)
+                            }}
+                          />
+                        </div>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {customer.lastContactDays === 0 ? 'Today' : `${customer.lastContactDays} days ago`}
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className="font-bold text-gray-900">
+                        {customer.mrr > 0 ? formatCurrency(customer.mrr) : '-'}
+                      </div>
+                      {customer.mrr > 0 && (
+                        <div className="text-xs text-gray-500">per month</div>
+                      )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className={`text-sm font-medium ${
+                        customer.lastContactDays === 0 ? 'text-emerald-600' :
+                        customer.lastContactDays <= 7 ? 'text-gray-700' :
+                        customer.lastContactDays <= 14 ? 'text-amber-600' :
+                        'text-red-600'
+                      }`}>
+                        {customer.lastContactDays === 0 ? 'Today' : `${customer.lastContactDays}d ago`}
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 whitespace-nowrap">
                       <RiskBadge level={customer.riskLevel} />
+                    </td>
+                    <td className="px-8 py-5 whitespace-nowrap text-right">
+                      <svg className="w-5 h-5 text-gray-400 group-hover:text-violet-600 transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </td>
                   </tr>
                 ))}
@@ -192,57 +272,82 @@ export default function CustomerIntelligenceDashboard() {
   );
 }
 
-function KPICard({ 
-  label, 
-  value, 
-  subtitle, 
-  color = 'default' 
-}: { 
-  label: string; 
-  value: string | number; 
+function KPICard({
+  label,
+  value,
+  subtitle,
+  icon,
+  gradient,
+  iconBg
+}: {
+  label: string;
+  value: string | number;
   subtitle?: string;
-  color?: 'red' | 'green' | 'blue' | 'default';
+  icon: string;
+  gradient: string;
+  iconBg: string;
 }) {
-  const colorClasses = {
-    red: 'text-red-600',
-    green: 'text-green-600',
-    blue: 'text-blue-600',
-    default: 'text-gray-900',
-  };
-
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-      <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-        {label}
+    <div className="relative overflow-hidden bg-white rounded-2xl shadow-elegant border border-gray-100 hover-lift group">
+      {/* Gradient accent bar at top */}
+      <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${gradient}`}></div>
+
+      <div className="p-6">
+        <div className="flex items-start justify-between mb-4">
+          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${iconBg} flex items-center justify-center text-2xl shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
+            {icon}
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+            {label}
+          </div>
+          <div className="text-4xl font-black text-gray-900 tracking-tight">
+            {value}
+          </div>
+          {subtitle && (
+            <div className="text-sm text-gray-500 font-medium">{subtitle}</div>
+          )}
+        </div>
       </div>
-      <div className={`text-4xl font-extrabold ${colorClasses[color]}`}>
-        {value}
-      </div>
-      {subtitle && (
-        <div className="text-sm text-gray-500 mt-1">{subtitle}</div>
-      )}
+
+      {/* Subtle gradient overlay on hover */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`}></div>
     </div>
   );
 }
 
 function RiskBadge({ level }: { level: string }) {
-  const styles = {
-    low: 'bg-green-50 text-green-700 border-green-200',
-    medium: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    high: 'bg-orange-50 text-orange-700 border-orange-200',
-    critical: 'bg-red-50 text-red-700 border-red-200',
+  const config = {
+    low: {
+      className: 'bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700 border-emerald-200',
+      icon: '✓',
+      label: 'Low Risk'
+    },
+    medium: {
+      className: 'bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 border-amber-200',
+      icon: '◐',
+      label: 'Medium'
+    },
+    high: {
+      className: 'bg-gradient-to-r from-orange-50 to-red-50 text-orange-700 border-orange-200',
+      icon: '⚠',
+      label: 'High Risk'
+    },
+    critical: {
+      className: 'bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border-red-200',
+      icon: '🚨',
+      label: 'Critical'
+    },
   };
 
-  const labels = {
-    low: 'Low Risk',
-    medium: 'Medium',
-    high: 'High Risk',
-    critical: 'Critical',
-  };
+  const badge = config[level as keyof typeof config];
 
   return (
-    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${styles[level as keyof typeof styles]}`}>
-      {labels[level as keyof typeof labels]}
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border shadow-sm ${badge.className}`}>
+      <span>{badge.icon}</span>
+      {badge.label}
     </span>
   );
 }
