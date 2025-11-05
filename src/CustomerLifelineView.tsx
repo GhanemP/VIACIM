@@ -8,6 +8,7 @@ import { trackEvent } from './telemetry';
 interface CustomerLifelineViewProps {
   customer: Customer;
   onBack: () => void;
+  onSwitchView?: () => void;
 }
 
 // S6: URL state sync helpers
@@ -40,7 +41,7 @@ const useURLState = () => {
   return { urlParams, updateURL };
 };
 
-const CustomerLifelineView = ({ customer, onBack }: CustomerLifelineViewProps) => {
+const CustomerLifelineView = ({ customer, onBack, onSwitchView }: CustomerLifelineViewProps) => {
   const { urlParams, updateURL } = useURLState();
 
   // S6: Initialize state from URL
@@ -211,6 +212,18 @@ const CustomerLifelineView = ({ customer, onBack }: CustomerLifelineViewProps) =
             </div>
 
             <div className="flex items-center gap-4">
+              {onSwitchView && (
+                <button
+                  onClick={onSwitchView}
+                  className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                  title="Switch to Journey View"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                  <span>Journey View</span>
+                </button>
+              )}
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">Health:</span>
                 <span className={`text-xl font-bold ${getHealthColor(customer.healthScore)}`}>

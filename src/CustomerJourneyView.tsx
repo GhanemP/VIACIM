@@ -7,9 +7,10 @@ import CompactFilters from './CompactFilters';
 interface CustomerJourneyViewProps {
   customer: Customer;
   onBack: () => void;
+  onSwitchView?: () => void;
 }
 
-const CustomerJourneyView = ({ customer, onBack }: CustomerJourneyViewProps) => {
+const CustomerJourneyView = ({ customer, onBack, onSwitchView }: CustomerJourneyViewProps) => {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [filteredEvents, setFilteredEvents] = useState<JourneyEvent[]>(customer.interactions);
 
@@ -59,6 +60,18 @@ const CustomerJourneyView = ({ customer, onBack }: CustomerJourneyViewProps) => 
             </div>
 
             <div className="flex items-center space-x-4">
+              {onSwitchView && (
+                <button
+                  onClick={onSwitchView}
+                  className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                  title="Switch to Horizontal Lifeline View"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                  <span>Lifeline View</span>
+                </button>
+              )}
               <span className={`px-4 py-2 rounded-lg text-sm font-semibold border ${getRiskColor(customer.riskLevel)}`}>
                 {customer.riskLevel.toUpperCase()} RISK
               </span>

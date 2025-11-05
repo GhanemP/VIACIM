@@ -7,7 +7,7 @@ interface JourneyNarrationProps {
 }
 
 // S10: Generate journey narration from events
-const generateNarration = (events: JourneyEvent[], _customerName: string): JourneySummary['narration'] => {
+const generateNarration = (events: JourneyEvent[]): JourneySummary['narration'] => {
   if (events.length === 0) {
     return {
       start: 'No journey data available yet.',
@@ -119,7 +119,7 @@ const generateNarration = (events: JourneyEvent[], _customerName: string): Journ
 };
 
 const JourneyNarration = ({ events, customerName }: JourneyNarrationProps) => {
-  const narration = useMemo(() => generateNarration(events, customerName), [events, customerName]);
+  const narration = useMemo(() => generateNarration(events), [events]);
 
   return (
     <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-b border-gray-200">

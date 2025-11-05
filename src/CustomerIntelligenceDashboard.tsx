@@ -3,11 +3,15 @@ import type { Customer } from './types';
 import { generateDemoCustomers } from './demoDataEnhanced';
 import DashboardOverview from './DashboardOverview';
 import CustomerJourneyView from './CustomerJourneyView';
+import CustomerLifelineView from './CustomerLifelineView';
 import { trackEvent } from './telemetry';
+
+type ViewMode = 'journey' | 'lifeline';
 
 export default function CustomerIntelligenceDashboard() {
   const [customers] = useState<Customer[]>(generateDemoCustomers());
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('journey');
 
   useEffect(() => {
     if (selectedCustomerId) {
@@ -28,7 +32,18 @@ export default function CustomerIntelligenceDashboard() {
     setSelectedCustomerId(null);
   };
 
-  // Show overview when no customer selected, otherwise show journey
+  const handleSwitchView = () => {
+    setViewMode(prev => prev === 'journey' ? 'lifeline' : 'journey');
+    trackEvent({ 
+      type: 'FILTER_APPLY', 
+      payload: { 
+        filterType: 'viewMode', 
+        value: viewMode === 'journey' ? 'lifeline' : 'journey' 
+      } 
+    });
+  };
+
+  // Show overview when no customer selected, otherwise show selected view
   if (!selectedCustomer) {
     return (
       <DashboardOverview
@@ -38,10 +53,22 @@ export default function CustomerIntelligenceDashboard() {
     );
   }
 
+  // Render the selected view mode
+  if (viewMode === 'lifeline') {
+    return (
+      <CustomerLifelineView
+        customer={selectedCustomer}
+        onBack={handleBackToDashboard}
+        onSwitchView={handleSwitchView}
+      />
+    );
+  }
+
   return (
     <CustomerJourneyView
       customer={selectedCustomer}
       onBack={handleBackToDashboard}
+      onSwitchView={handleSwitchView}
     />
   );
 }
