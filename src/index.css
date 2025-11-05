@@ -137,4 +137,75 @@
     background-size: 1000px 100%;
     animation: shimmer 2s infinite;
   }
+
+  /* v1.5: Enhanced timeline animations */
+  @keyframes glow-pulse {
+    0%, 100% {
+      filter: drop-shadow(0 0 2px currentColor);
+    }
+    50% {
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+  }
+
+  .glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  .float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes scale-in {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .scale-in {
+    animation: scale-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Smooth zoom transitions for timeline */
+  .timeline-zoom {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Event marker hover effects */
+  .event-marker {
+    transition: all 0.2s ease-out;
+    cursor: pointer;
+  }
+
+  .event-marker:hover {
+    transform: scale(1.2);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+  }
+
+  /* Gap indicator styling */
+  .gap-indicator {
+    animation: fadeIn 0.3s ease-out;
+    transition: opacity 0.2s ease;
+  }
+
+  .gap-indicator:hover {
+    opacity: 1 !important;
+  }
 }

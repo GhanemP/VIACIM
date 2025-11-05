@@ -11,7 +11,7 @@ interface HorizontalLifelineProps {
   height?: number;
 }
 
-// S4: Marker encoding configuration
+// S4: Marker encoding configuration - ENHANCED for v1.5
 const MARKER_CONFIG = {
   shapes: {
     voice: 'circle',
@@ -21,7 +21,7 @@ const MARKER_CONFIG = {
   } as Record<ChannelType, string>,
 
   colors: {
-    // Priority-based colors (S4 requirement)
+    // Priority-based colors (S4 requirement) - Enhanced contrast
     critical: '#dc2626', // red-600
     high: '#ea580c', // orange-600
     medium: '#f59e0b', // amber-500
@@ -35,6 +35,14 @@ const MARKER_CONFIG = {
     flag: '#f59e0b', // amber-500
     compliance: '#8b5cf6', // violet-500
   } as Record<TagType, string>,
+  
+  // v1.5: Enhanced event type shapes for better differentiation
+  eventTypeShapes: {
+    risk: 'warning-triangle',
+    opportunity: 'star',
+    normal: 'circle',
+    compliance: 'hexagon',
+  },
 };
 
 // S5: Clustering threshold
@@ -187,24 +195,101 @@ const HorizontalLifeline = ({
     };
   }, [dimensions]);
 
-  // S4: Render marker shape
+  // v1.5: Enhanced marker rendering with better shapes and visual effects
   const renderMarker = (
-    channel: ChannelType,
+    event: JourneyEvent,
     x: number,
     y: number,
-    priority: PriorityLevel,
     size: number,
     isSelected: boolean,
     isHovered: boolean
   ) => {
-    const color = MARKER_CONFIG.colors[priority];
-    const shape = MARKER_CONFIG.shapes[channel];
-    const actualSize = size * (isSelected ? 1.5 : isHovered ? 1.3 : 1);
-    const strokeWidth = isSelected ? 3 : isHovered ? 2 : 1;
+    const channel = event.channel;
+    const priority = event.priority;
+    const hasRisk = event.tags.includes('risk') || event.score.risk > 60;
+    const hasOpportunity = event.tags.includes('opportunity') || event.score.opportunity > 60;
+    
+    // Determine primary color based on tags/scores
+    let color = MARKER_CONFIG.colors[priority];
+    let shape = MARKER_CONFIG.shapes[channel];
+    
+    // Override shape for special event types
+    if (hasRisk) {
+      shape = 'warning-triangle';
+      color = MARKER_CONFIG.tagColors.risk;
+    } else if (hasOpportunity) {
+      shape = 'star';
+      color = MARKER_CONFIG.tagColors.opportunity;
+    }
+    
+    const actualSize = size * (isSelected ? 1.6 : isHovered ? 1.4 : 1);
+    const strokeWidth = isSelected ? 3 : isHovered ? 2.5 : 1.5;
+    
+    // Add glow effect for high-risk events
+    const glowId = `glow-${event.id}`;
 
-    switch (shape) {
-      case 'circle':
-        return (
+    return (
+      <g>
+        {hasRisk && (
+          <defs>
+            <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+        )}
+        
+        {/* Render shape based on type */}
+        {shape === 'warning-triangle' && (
+          <path
+            d={`M ${x},${y - actualSize * 1.2} L ${x + actualSize},${y + actualSize * 0.6} L ${x - actualSize},${y + actualSize * 0.6} Z`}
+            fill={color}
+            stroke="white"
+            strokeWidth={strokeWidth}
+            filter={hasRisk ? `url(#${glowId})` : undefined}
+            className="transition-all cursor-pointer"
+          >
+            <animate
+              attributeName="opacity"
+              values={hasRisk ? "1;0.6;1" : "1"}
+              dur={hasRisk ? "2s" : "0s"}
+              repeatCount="indefinite"
+            />
+          </path>
+        )}
+        
+        {shape === 'star' && (
+          <path
+            d={`M ${x},${y - actualSize} 
+                L ${x + actualSize * 0.3},${y - actualSize * 0.3} 
+                L ${x + actualSize},${y - actualSize * 0.3}
+                L ${x + actualSize * 0.5},${y + actualSize * 0.1}
+                L ${x + actualSize * 0.7},${y + actualSize}
+                L ${x},${y + actualSize * 0.5}
+                L ${x - actualSize * 0.7},${y + actualSize}
+                L ${x - actualSize * 0.5},${y + actualSize * 0.1}
+                L ${x - actualSize},${y - actualSize * 0.3}
+                L ${x - actualSize * 0.3},${y - actualSize * 0.3} Z`}
+            fill={color}
+            stroke="white"
+            strokeWidth={strokeWidth}
+            className="transition-all cursor-pointer"
+          >
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
+              from={`0 ${x} ${y}`}
+              to={`360 ${x} ${y}`}
+              dur="20s"
+              repeatCount="indefinite"
+            />
+          </path>
+        )}
+        
+        {shape === 'circle' && (
           <circle
             cx={x}
             cy={y}
@@ -214,9 +299,9 @@ const HorizontalLifeline = ({
             strokeWidth={strokeWidth}
             className="transition-all cursor-pointer"
           />
-        );
-      case 'square':
-        return (
+        )}
+        
+        {shape === 'square' && (
           <rect
             x={x - actualSize}
             y={y - actualSize}
@@ -227,9 +312,9 @@ const HorizontalLifeline = ({
             strokeWidth={strokeWidth}
             className="transition-all cursor-pointer"
           />
-        );
-      case 'diamond':
-        return (
+        )}
+        
+        {shape === 'diamond' && (
           <path
             d={`M ${x},${y - actualSize} L ${x + actualSize},${y} L ${x},${y + actualSize} L ${x - actualSize},${y} Z`}
             fill={color}
@@ -237,9 +322,9 @@ const HorizontalLifeline = ({
             strokeWidth={strokeWidth}
             className="transition-all cursor-pointer"
           />
-        );
-      case 'triangle':
-        return (
+        )}
+        
+        {shape === 'triangle' && (
           <path
             d={`M ${x},${y - actualSize} L ${x + actualSize},${y + actualSize} L ${x - actualSize},${y + actualSize} Z`}
             fill={color}
@@ -247,10 +332,9 @@ const HorizontalLifeline = ({
             strokeWidth={strokeWidth}
             className="transition-all cursor-pointer"
           />
-        );
-      default:
-        return null;
-    }
+        )}
+      </g>
+    );
   };
 
   const handleEventClick = (eventId: string) => {
@@ -366,6 +450,74 @@ const HorizontalLifeline = ({
             );
           })}
 
+          {/* v1.5: Journey progress line connecting events */}
+          {sortedEvents.length > 1 && (
+            <g>
+              {sortedEvents.map((event, i) => {
+                if (i === sortedEvents.length - 1) return null;
+                
+                const x1 = xScaleZoomed(new Date(event.ts));
+                const x2 = xScaleZoomed(new Date(sortedEvents[i + 1].ts));
+                
+                if (x2 < -50 || x1 > innerWidth + 50) return null;
+                
+                // Calculate gap duration in days
+                const gapDays = (new Date(sortedEvents[i + 1].ts).getTime() - new Date(event.ts).getTime()) / (1000 * 60 * 60 * 24);
+                const isLargeGap = gapDays > 7;
+                
+                // Color gradient based on health/activity
+                const avgRisk = (event.score.risk + sortedEvents[i + 1].score.risk) / 2;
+                let lineColor = '#10b981'; // green
+                if (avgRisk > 60) lineColor = '#ef4444'; // red
+                else if (avgRisk > 40) lineColor = '#f59e0b'; // amber
+                
+                return (
+                  <g key={`line-${i}`}>
+                    <line
+                      x1={x1}
+                      y1={centerY}
+                      x2={x2}
+                      y2={centerY}
+                      stroke={lineColor}
+                      strokeWidth={isLargeGap ? 1 : 2}
+                      strokeDasharray={isLargeGap ? "5,5" : "none"}
+                      opacity={isLargeGap ? 0.3 : 0.6}
+                      className="transition-all"
+                    />
+                    
+                    {/* Gap indicator for significant gaps */}
+                    {isLargeGap && gapDays > 14 && (
+                      <g transform={`translate(${(x1 + x2) / 2}, ${centerY})`}>
+                        {/* Gap background */}
+                        <rect
+                          x={-30}
+                          y={-30}
+                          width={60}
+                          height={25}
+                          rx={4}
+                          fill="#fef3c7"
+                          fillOpacity={0.9}
+                          stroke="#f59e0b"
+                          strokeWidth={1}
+                        />
+                        {/* Gap text */}
+                        <text
+                          textAnchor="middle"
+                          dy={-15}
+                          fontSize={10}
+                          fontWeight="600"
+                          fill="#92400e"
+                        >
+                          {Math.round(gapDays)}d gap
+                        </text>
+                      </g>
+                    )}
+                  </g>
+                );
+              })}
+            </g>
+          )}
+
           {/* Render individual events */}
           {individualEvents.map((event) => {
             const x = xScaleZoomed(new Date(event.ts));
@@ -373,7 +525,7 @@ const HorizontalLifeline = ({
 
             const isSelected = event.id === selectedEventId;
             const isHovered = hoveredEvent?.id === event.id;
-            const size = 6 + (event.weight / 20); // Size based on weight
+            const size = 8 + (event.weight / 15); // Larger base size for v1.5
 
             return (
               <g
@@ -384,10 +536,9 @@ const HorizontalLifeline = ({
                 onMouseLeave={() => handleEventHover(null, 0, 0)}
               >
                 {renderMarker(
-                  event.channel,
+                  event,
                   0,
                   0,
-                  event.priority,
                   size,
                   isSelected,
                   isHovered
@@ -436,56 +587,194 @@ const HorizontalLifeline = ({
         </button>
       </div>
 
-      {/* Tooltip */}
+      {/* Enhanced Tooltip v1.5 */}
       {hoveredEvent && (
         <div
-          className="fixed z-50 bg-gray-900 text-white text-xs rounded-lg shadow-xl p-3 max-w-xs pointer-events-none"
+          className="fixed z-50 bg-gradient-to-br from-gray-900 to-gray-800 text-white text-xs rounded-xl shadow-2xl p-4 max-w-sm pointer-events-none border border-gray-700"
           style={{
             left: tooltipPos.x + 10,
             top: tooltipPos.y + 10,
           }}
         >
-          <div className="font-bold mb-1">{hoveredEvent.title}</div>
-          <div className="text-gray-300 mb-2">{new Date(hoveredEvent.ts).toLocaleString()}</div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="capitalize">{hoveredEvent.channel}</span>
-            <span>•</span>
-            <span>{hoveredEvent.stage}</span>
-            <span>•</span>
-            <span>{hoveredEvent.durationSec}s</span>
+          <div className="font-bold text-sm mb-2 flex items-start gap-2">
+            {hoveredEvent.tags.includes('risk') && <span className="text-red-400 text-base">⚠️</span>}
+            {hoveredEvent.tags.includes('opportunity') && <span className="text-green-400 text-base">✨</span>}
+            <span className="flex-1">{hoveredEvent.title}</span>
           </div>
-          {(hoveredEvent.score.risk > 50 || hoveredEvent.score.opportunity > 50) && (
-            <div className="mt-2 pt-2 border-t border-gray-700 text-xs">
-              {hoveredEvent.score.risk > 50 && (
-                <div className="text-red-400">⚠️ Risk: {hoveredEvent.score.risk}</div>
+          
+          <div className="text-gray-300 text-xs mb-3">
+            {new Date(hoveredEvent.ts).toLocaleDateString(undefined, { 
+              weekday: 'short', 
+              month: 'short', 
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </div>
+          
+          {hoveredEvent.summary && (
+            <div className="text-gray-200 text-xs mb-3 leading-relaxed">
+              {hoveredEvent.summary}
+            </div>
+          )}
+          
+          <div className="flex items-center gap-3 text-xs text-gray-400 mb-3">
+            <span className="capitalize flex items-center gap-1">
+              📱 {hoveredEvent.channel}
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1">
+              📊 {hoveredEvent.stage}
+            </span>
+            {hoveredEvent.durationSec > 0 && (
+              <>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  ⏱️ {Math.round(hoveredEvent.durationSec / 60)}m
+                </span>
+              </>
+            )}
+          </div>
+          
+          {(hoveredEvent.score.risk > 30 || hoveredEvent.score.opportunity > 30) && (
+            <div className="mt-3 pt-3 border-t border-gray-700 space-y-2">
+              {hoveredEvent.score.risk > 30 && (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 text-xs">Risk Score</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full ${
+                          hoveredEvent.score.risk > 70 ? 'bg-red-500' :
+                          hoveredEvent.score.risk > 40 ? 'bg-orange-500' : 'bg-yellow-500'
+                        }`}
+                        style={{ width: `${hoveredEvent.score.risk}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-bold text-red-400 w-6 text-right">
+                      {hoveredEvent.score.risk}
+                    </span>
+                  </div>
+                </div>
               )}
-              {hoveredEvent.score.opportunity > 50 && (
-                <div className="text-green-400">✨ Opportunity: {hoveredEvent.score.opportunity}</div>
+              {hoveredEvent.score.opportunity > 30 && (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 text-xs">Opportunity</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-green-500 rounded-full"
+                        style={{ width: `${hoveredEvent.score.opportunity}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-bold text-green-400 w-6 text-right">
+                      {hoveredEvent.score.opportunity}
+                    </span>
+                  </div>
+                </div>
               )}
+            </div>
+          )}
+          
+          {hoveredEvent.tags.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-gray-700 flex flex-wrap gap-1">
+              {hoveredEvent.tags.map(tag => (
+                <span 
+                  key={tag}
+                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                    tag === 'risk' ? 'bg-red-500/20 text-red-300' :
+                    tag === 'opportunity' ? 'bg-green-500/20 text-green-300' :
+                    tag === 'flag' ? 'bg-yellow-500/20 text-yellow-300' :
+                    'bg-purple-500/20 text-purple-300'
+                  }`}
+                >
+                  {tag}
+                </span>
+              ))}
             </div>
           )}
         </div>
       )}
 
-      {/* Legend */}
-      <div className="absolute top-4 left-4 bg-white rounded-lg shadow-md border border-gray-200 p-3">
-        <div className="text-xs font-bold text-gray-700 mb-2">Channels</div>
-        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600">
-          <div className="flex items-center gap-2">
-            <svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="#6b7280" /></svg>
-            <span>Voice</span>
+      {/* Enhanced Legend v1.5 */}
+      <div className="absolute top-4 left-4 bg-white rounded-xl shadow-lg border border-gray-200 p-4 max-w-xs">
+        <div className="text-xs font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <span className="text-base">🎯</span>
+          <span>Timeline Guide</span>
+        </div>
+        
+        {/* Event Types */}
+        <div className="mb-3">
+          <div className="text-xs font-semibold text-gray-700 mb-2">Event Types</div>
+          <div className="space-y-1.5 text-xs text-gray-600">
+            <div className="flex items-center gap-2">
+              <svg width="16" height="16">
+                <path d="M8,2 L14,12 L2,12 Z" fill="#ef4444" stroke="white" strokeWidth="1.5"/>
+              </svg>
+              <span className="font-medium text-red-600">Risk Event</span>
+              <span className="text-gray-400">(pulsing)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg width="16" height="16">
+                <path d="M8,1 L10,6 L15,6 L11,9 L13,14 L8,11 L3,14 L5,9 L1,6 L6,6 Z" fill="#10b981" stroke="white" strokeWidth="1.5"/>
+              </svg>
+              <span className="font-medium text-green-600">Opportunity</span>
+              <span className="text-gray-400">(rotating)</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <svg width="12" height="12"><rect x="1" y="1" width="10" height="10" fill="#6b7280" /></svg>
-            <span>Email</span>
+        </div>
+        
+        {/* Channels */}
+        <div className="mb-3 pb-3 border-b border-gray-200">
+          <div className="text-xs font-semibold text-gray-700 mb-2">Channels</div>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-gray-600">
+            <div className="flex items-center gap-2">
+              <svg width="14" height="14"><circle cx="7" cy="7" r="5" fill="#6b7280" stroke="white" strokeWidth="1.5"/></svg>
+              <span>Voice</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg width="14" height="14"><rect x="2" y="2" width="10" height="10" fill="#6b7280" stroke="white" strokeWidth="1.5"/></svg>
+              <span>Email</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg width="14" height="14"><path d="M7,2 L12,7 L7,12 L2,7 Z" fill="#6b7280" stroke="white" strokeWidth="1.5"/></svg>
+              <span>Chat</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg width="14" height="14"><path d="M7,2 L12,12 L2,12 Z" fill="#6b7280" stroke="white" strokeWidth="1.5"/></svg>
+              <span>CRM</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <svg width="12" height="12"><path d="M6,1 L11,6 L6,11 L1,6 Z" fill="#6b7280" /></svg>
-            <span>Chat</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg width="12" height="12"><path d="M6,1 L11,11 L1,11 Z" fill="#6b7280" /></svg>
-            <span>CRM</span>
+        </div>
+        
+        {/* Journey Line */}
+        <div>
+          <div className="text-xs font-semibold text-gray-700 mb-2">Journey Flow</div>
+          <div className="space-y-1.5 text-xs text-gray-600">
+            <div className="flex items-center gap-2">
+              <svg width="30" height="4">
+                <line x1="0" y1="2" x2="30" y2="2" stroke="#10b981" strokeWidth="2"/>
+              </svg>
+              <span>Healthy</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg width="30" height="4">
+                <line x1="0" y1="2" x2="30" y2="2" stroke="#f59e0b" strokeWidth="2"/>
+              </svg>
+              <span>Moderate Risk</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg width="30" height="4">
+                <line x1="0" y1="2" x2="30" y2="2" stroke="#ef4444" strokeWidth="2"/>
+              </svg>
+              <span>High Risk</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg width="30" height="4">
+                <line x1="0" y1="2" x2="30" y2="2" stroke="#9ca3af" strokeWidth="1" strokeDasharray="4,4" opacity="0.5"/>
+              </svg>
+              <span>Engagement Gap</span>
+            </div>
           </div>
         </div>
       </div>
