@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import type { Customer, DashboardMetrics } from './types';
 import { generateDemoCustomers } from './demoDataEnhanced';
 import { getHealthScoreColor, formatCurrency, formatRelativeDate } from './utils';
@@ -1024,7 +1024,7 @@ function AdvancedTimelineChart({
   const [panOffset, setPanOffset] = useState(0); // Pan offset in pixels
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState<{ x: number; offset: number } | null>(null);
-  const timelineRef = React.useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
 
   if (interactions.length === 0) {
     return (
