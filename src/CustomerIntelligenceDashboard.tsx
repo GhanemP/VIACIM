@@ -247,7 +247,10 @@ function RiskBadge({ level }: { level: string }) {
   );
 }
 
-interface TimelineInteraction {
+// Alternative Timeline Implementation - Available for future use
+// This horizontal timeline component provides an alternative visualization.
+
+export interface TimelineInteraction {
   id: string;
   timestamp: Date;
   type: string;
@@ -257,7 +260,7 @@ interface TimelineInteraction {
   tags: string[];
 }
 
-function HorizontalTimeline({
+export function HorizontalTimeline({
   interactions,
   onInteractionClick,
   selectedId,
@@ -594,16 +597,17 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
   }, [sortedInteractions, filterType, filterSentiment]);
 
   // Group interactions by lifecycle stage
-  const groupedByStage = useMemo(() => {
-    const groups: Record<string, typeof filteredInteractions> = {};
-    filteredInteractions.forEach(interaction => {
-      if (!groups[interaction.stage]) {
-        groups[interaction.stage] = [];
-      }
-      groups[interaction.stage].push(interaction);
-    });
-    return groups;
-  }, [filteredInteractions]);
+  // Note: This grouping is prepared for future use (e.g., VerticalTimeline component)
+  // const groupedByStage = useMemo(() => {
+  //   const groups: Record<string, typeof filteredInteractions> = {};
+  //   filteredInteractions.forEach(interaction => {
+  //     if (!groups[interaction.stage]) {
+  //       groups[interaction.stage] = [];
+  //     }
+  //     groups[interaction.stage].push(interaction);
+  //   });
+  //   return groups;
+  // }, [filteredInteractions]);
 
   // Calculate health trend data points
   const healthTrend = useMemo(() => {
@@ -1173,8 +1177,9 @@ function InteractionListView({
   );
 }
 
-// Vertical Timeline Component
-function VerticalTimeline({
+// Alternative Vertical Timeline Component - Available for future use
+// This component provides a stage-grouped vertical timeline view.
+export function VerticalTimeline({
   groupedByStage,
   onInteractionClick,
   selectedId,
@@ -1702,7 +1707,9 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
   );
 }
 
-interface EvidenceLockerProps {
+// Evidence Locker Component - Available for future use
+// This modal component provides detailed interaction viewing.
+export interface EvidenceLockerProps {
   interaction: {
     id: string;
     type: string;
@@ -1720,7 +1727,7 @@ interface EvidenceLockerProps {
   onClose: () => void;
 }
 
-function EvidenceLocker({ interaction, onClose }: EvidenceLockerProps) {
+export function EvidenceLocker({ interaction, onClose }: EvidenceLockerProps) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">

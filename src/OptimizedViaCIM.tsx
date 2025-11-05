@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 
 // Types
 type Stage = "prospecting" | "qualification" | "demo" | "proposal" | "negotiation" | "closed";
@@ -264,11 +264,28 @@ const CommandBar = ({ value, onChange, onClear }: { value: string; onChange: (q:
   );
 };
 
-const TimelineLane = ({ stage, events, minDate, maxDate, onSelectEvent, selectedEventId, isExpanded, onToggleExpand }: any) => {
+interface TimelineLaneProps {
+  stage: Stage;
+  events: Event[];
+  minDate: number;
+  maxDate: number;
+  onSelectEvent: (event: Event | null) => void;
+  selectedEventId: string | null;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+}
+
+interface SilenceGap {
+  start: number;
+  end: number;
+  days: number;
+}
+
+const TimelineLane = ({ stage, events, minDate, maxDate, onSelectEvent, selectedEventId, isExpanded, onToggleExpand }: TimelineLaneProps) => {
   const dateRange = maxDate - minDate;
   const getXPosition = (ts: number) => ((ts - minDate) / dateRange) * 100;
   const silenceThreshold = 5 * 24 * 60 * 60 * 1000;
-  const silenceGaps: any[] = [];
+  const silenceGaps: SilenceGap[] = [];
   const sortedEvents = [...events].sort((a, b) => a.ts - b.ts);
   for (let i = 0; i < sortedEvents.length - 1; i++) {
     const gap = sortedEvents[i + 1].ts - sortedEvents[i].ts;
@@ -338,7 +355,16 @@ const TimelineLane = ({ stage, events, minDate, maxDate, onSelectEvent, selected
   );
 };
 
-const EvidenceLocker = ({ event, onClose, onNext, onPrev, hasNext, hasPrev }: any) => {
+interface EvidenceLockerProps {
+  event: Event | null;
+  onClose: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+const EvidenceLocker = ({ event, onClose, onNext, onPrev, hasNext, hasPrev }: EvidenceLockerProps) => {
   if (!event) return null;
   const daysSince = getDaysSince(event.ts);
   
@@ -447,7 +473,7 @@ const EvidenceLocker = ({ event, onClose, onNext, onPrev, hasNext, hasPrev }: an
           {event.evidence && event.evidence.length > 0 && (
             <div className="space-y-3">
               <div className="text-sm font-semibold text-gray-900">Evidence</div>
-              {event.evidence.map((ev: any, i: number) => (
+              {event.evidence.map((ev: { kind: string; text: string }, i: number) => (
                 <div key={i} className="p-4 bg-white border border-gray-200 rounded-lg">
                   <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">{ev.kind.replace(/_/g, " ")}</div>
                   <pre className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-sans">{ev.text}</pre>
@@ -501,13 +527,14 @@ export default function OptimizedViaCIM() {
     if (!selectedEvent) return -1;
     return filteredEvents.findIndex(e => e.id === selectedEvent.id);
   }, [selectedEvent, filteredEvents]);
-  
-  const handleNext = () => {
+
+  const handleNext = useCallback(() => {
     if (selectedEventIndex < filteredEvents.length - 1) setSelectedEvent(filteredEvents[selectedEventIndex + 1]);
-  };
-  const handlePrev = () => {
+  }, [selectedEventIndex, filteredEvents]);
+
+  const handlePrev = useCallback(() => {
     if (selectedEventIndex > 0) setSelectedEvent(filteredEvents[selectedEventIndex - 1]);
-  };
+  }, [selectedEventIndex, filteredEvents]);
   const toggleStageExpand = (stage: Stage) => {
     setExpandedStages(prev => {
       const next = new Set(prev);
@@ -526,7 +553,7 @@ export default function OptimizedViaCIM() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedEvent, selectedEventIndex, filteredEvents]);
+  }, [selectedEvent, selectedEventIndex, filteredEvents, handleNext, handlePrev]);
   
   return (
     <div className="min-h-screen bg-gray-50">

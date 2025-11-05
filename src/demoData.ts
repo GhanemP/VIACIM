@@ -3,12 +3,9 @@
 import type {
   Customer,
   Interaction,
-  AIInsight,
-  RecommendedAction,
   LifecycleStage,
   InteractionType,
   SentimentType,
-  TagType,
 } from './types';
 import { calculateHealthScore, calculateRiskLevel, detectEngagementGaps, calculateChurnProbability } from './utils';
 
