@@ -208,4 +208,30 @@
   .gap-indicator:hover {
     opacity: 1 !important;
   }
+
+  /* Phase 1: Urgency pulse for critical customers */
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 0 0 currentColor;
+    }
+    50% {
+      opacity: 0.8;
+      box-shadow: 0 0 0 8px transparent;
+    }
+  }
+
+  .pulse-slow {
+    animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Quick action button hover effects */
+  .action-btn {
+    @apply transition-all duration-200;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
 }
