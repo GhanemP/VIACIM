@@ -472,34 +472,52 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Minimal Sticky Header - View Toggle Only */}
-      <div className="bg-white/95 backdrop-blur-sm border-b border-neutral-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-8 py-3">
+      <div className="glass border-b border-white/20 sticky top-0 z-40 shadow-elegant">
+        <div className="max-w-7xl mx-auto px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-neutral-600">
-              Customer Journey View
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onBack}
+                className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/50 transition-all text-gray-700 hover:text-gray-900"
+                title="Back to Dashboard"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div>
+                <div className="text-sm font-bold text-gray-900">{customer.name}</div>
+                <div className="text-xs text-gray-500">Customer Journey Analysis</div>
+              </div>
             </div>
-            <div className="flex items-center gap-0.5 bg-neutral-100/80 rounded-lg p-0.5">
+            <div className="flex items-center gap-0.5 bg-white/60 backdrop-blur-sm rounded-xl p-1 shadow-sm border border-gray-200">
               <button
                 onClick={() => setViewMode('timeline')}
-                className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
+                className={`px-5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
                   viewMode === 'timeline'
-                    ? 'bg-white text-neutral-900 shadow-sm'
-                    : 'text-neutral-600 hover:text-neutral-900'
+                    ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                 }`}
               >
-                📊 Timeline
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Timeline
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
+                className={`px-5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
                   viewMode === 'list'
-                    ? 'bg-white text-neutral-900 shadow-sm'
-                    : 'text-neutral-600 hover:text-neutral-900'
+                    ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                 }`}
               >
-                📋 List
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+                List
               </button>
             </div>
           </div>
@@ -509,64 +527,96 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-8 py-8">
         {/* Layer 1: Hero Card - Progressive Disclosure "So What?" */}
-        <div className="bg-white rounded-2xl border border-neutral-200 p-12 mb-8 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex items-baseline gap-6">
+        <div className="relative overflow-hidden bg-white rounded-3xl border border-gray-200 p-12 mb-8 shadow-elegant-lg hover-lift group fade-in">
+          {/* Gradient background accent */}
+          <div
+            className="absolute inset-0 opacity-5"
+            style={{
+              background: `linear-gradient(135deg, ${getHealthScoreColor(customer.healthScore)}15 0%, transparent 100%)`
+            }}
+          ></div>
+
+          <div className="relative">
+            <div className="flex items-start justify-between mb-8">
+              <div className="flex items-baseline gap-8">
                 {/* Massive Health Score - The Focal Point */}
-                <div
-                  className="text-8xl font-black tracking-tight"
-                  style={{ color: getHealthScoreColor(customer.healthScore) }}
-                >
-                  {customer.healthScore}
+                <div className="relative">
+                  <div
+                    className="text-9xl font-black tracking-tighter drop-shadow-sm"
+                    style={{ color: getHealthScoreColor(customer.healthScore) }}
+                  >
+                    {customer.healthScore}
+                  </div>
+                  {/* Circular progress indicator behind the number */}
+                  <svg className="absolute inset-0 w-full h-full -z-10 opacity-20" viewBox="0 0 100 100">
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="45"
+                      fill="none"
+                      stroke={getHealthScoreColor(customer.healthScore)}
+                      strokeWidth="2"
+                      strokeDasharray={`${customer.healthScore * 2.83} 283`}
+                      transform="rotate(-90 50 50)"
+                    />
+                  </svg>
                 </div>
-                <div className="flex flex-col gap-2">
+
+                <div className="flex flex-col gap-3 pt-4">
                   {/* State - Connected to Score */}
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl font-bold text-neutral-900 capitalize">
+                    <span className="text-3xl font-black text-gray-900 capitalize tracking-tight">
                       {customer.riskLevel} Risk
                     </span>
                     <RiskBadge level={customer.riskLevel} />
                   </div>
+
                   {/* Reason - The "Why" */}
-                  <div className="text-base text-neutral-600">
-                    <span className="font-semibold">{largestGap}d</span> max engagement gap
+                  <div className="flex flex-col gap-2">
+                    <div className="text-base text-gray-600 flex items-center gap-2">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span className="font-bold text-gray-900">{largestGap}</span> days max engagement gap
+                    </div>
                     {customer.lastContactDays > 7 && (
-                      <span className="text-red-600 font-semibold ml-2">
-                        · {customer.lastContactDays}d since last contact
-                      </span>
+                      <div className="flex items-center gap-2 text-red-600">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="font-bold">{customer.lastContactDays}</span> days since last contact
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="mt-6 pt-6 border-t border-neutral-200">
-                <div className="flex items-center gap-6 text-sm text-neutral-600">
-                  <span>
-                    <span className="font-semibold text-neutral-900">{customer.name}</span>
-                  </span>
-                  <span>·</span>
-                  <span className="capitalize">{customer.stage.replace('-', ' ')}</span>
-                  <span>·</span>
-                  <span>{formatCurrency(customer.mrr)}/mo</span>
-                  <span>·</span>
-                  <span>{customer.tenure}m tenure</span>
-                </div>
-              </div>
             </div>
-            <div className="flex items-center gap-3 ml-8">
-              <button
-                onClick={onBack}
-                className="px-4 py-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-lg transition-colors text-sm font-medium"
-              >
-                ← Back to Dashboard
-              </button>
+
+            {/* Account Details Grid */}
+            <div className="grid grid-cols-4 gap-6 pt-6 border-t border-gray-200">
+              <div className="space-y-1">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">Account</div>
+                <div className="font-bold text-gray-900">{customer.name}</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">Stage</div>
+                <div className="font-bold text-gray-900 capitalize">{customer.stage.replace('-', ' ')}</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">Monthly Revenue</div>
+                <div className="font-bold text-gray-900">{formatCurrency(customer.mrr)}</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">Tenure</div>
+                <div className="font-bold text-gray-900">{customer.tenure} months</div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Layer 3: Refined Filters Bar (with custom toggle switches) */}
-        <div className="bg-white rounded-xl border border-neutral-200 p-6 mb-6">
-          <div className="space-y-5">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6 shadow-elegant fade-in">
+          <div className="space-y-6">
             {/* Type Filters */}
             <div>
               <div className="text-xs font-semibold text-neutral-700 uppercase tracking-wide mb-3">Interaction Types</div>
@@ -657,32 +707,35 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
         </div>
 
         {/* Elegant Overview */}
-        <div className="bg-white rounded-xl border border-neutral-200 p-8 mb-6">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6 shadow-elegant fade-in">
           <div className="flex items-start justify-between mb-8">
             <div>
-              <h2 className="text-base font-semibold text-neutral-900 tracking-tight">Journey Overview</h2>
-              <p className="text-sm text-neutral-500 mt-1">
-                {customer.interactions.length} touchpoints · {customer.tenure} month relationship
+              <h2 className="text-xl font-bold text-gray-900 tracking-tight">Journey Overview</h2>
+              <p className="text-sm text-gray-500 mt-2 flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                {customer.interactions.length} touchpoints over {customer.tenure} month relationship
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="text-center px-5 py-3 bg-neutral-50 rounded-xl border border-neutral-200">
-                <div className="text-2xl font-semibold text-neutral-900">
+            <div className="flex items-center gap-4">
+              <div className="text-center px-6 py-4 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border border-emerald-200 hover-lift">
+                <div className="text-3xl font-black text-emerald-600">
                   {sortedInteractions.filter(i => i.sentiment === 'very-positive' || i.sentiment === 'positive').length}
                 </div>
-                <div className="text-[10px] text-neutral-500 font-medium uppercase tracking-wide mt-1">Positive</div>
+                <div className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider mt-1">Positive</div>
               </div>
-              <div className="text-center px-5 py-3 bg-neutral-50 rounded-xl border border-neutral-200">
-                <div className="text-2xl font-semibold text-red-600">
+              <div className="text-center px-6 py-4 bg-gradient-to-br from-red-50 to-rose-50 rounded-xl border border-red-200 hover-lift">
+                <div className="text-3xl font-black text-red-600">
                   {sortedInteractions.filter(i => i.tags.some(t => ['risk', 'complaint', 'churn-signal'].includes(t))).length}
                 </div>
-                <div className="text-[10px] text-neutral-500 font-medium uppercase tracking-wide mt-1">Risk</div>
+                <div className="text-[10px] text-red-700 font-bold uppercase tracking-wider mt-1">Risk Signals</div>
               </div>
-              <div className="text-center px-5 py-3 bg-neutral-50 rounded-xl border border-neutral-200">
-                <div className="text-2xl font-semibold text-emerald-600">
+              <div className="text-center px-6 py-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 hover-lift">
+                <div className="text-3xl font-black text-blue-600">
                   {sortedInteractions.filter(i => i.tags.some(t => ['opportunity', 'upsell', 'success'].includes(t))).length}
                 </div>
-                <div className="text-[10px] text-neutral-500 font-medium uppercase tracking-wide mt-1">Opportunity</div>
+                <div className="text-[10px] text-blue-700 font-bold uppercase tracking-wider mt-1">Opportunities</div>
               </div>
             </div>
           </div>
@@ -882,21 +935,36 @@ function AdvancedTimelineChart({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-elegant fade-in">
       {/* Timeline Header with Zoom Controls */}
-      <div className="px-8 py-5 border-b border-neutral-200">
+      <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-neutral-900 tracking-tight">Interactive Timeline</h3>
-            <p className="text-xs text-neutral-500 mt-0.5">{interactions.length} interactions · {Math.floor(totalDuration / (1000 * 60 * 60 * 24))} days</p>
+            <h3 className="text-lg font-bold text-gray-900 tracking-tight flex items-center gap-2">
+              <svg className="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              Interactive Timeline
+            </h3>
+            <p className="text-xs text-gray-500 mt-1 flex items-center gap-3">
+              <span className="font-semibold">{interactions.length} interactions</span>
+              <span>·</span>
+              <span>{Math.floor(totalDuration / (1000 * 60 * 60 * 24))} days span</span>
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-neutral-500">
-              🖱️ Scroll to zoom · Drag to pan · Zoom: {Math.round(zoom * 100)}%
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-600 font-medium">
+              <span className="font-bold text-violet-600">{Math.round(zoom * 100)}%</span> zoom
+            </div>
+            <div className="text-xs text-gray-500 bg-white border border-gray-200 rounded-lg px-4 py-2 flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+              </svg>
+              Scroll to zoom · Drag to pan
+            </div>
             <button
               onClick={() => { setZoom(1); setPanOffset(0); }}
-              className="px-3 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors"
+              className="px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-lg transition-all shadow-sm hover-lift"
             >
               Reset View
             </button>
@@ -1061,8 +1129,8 @@ function InteractionListView({
   selectedId: string | null;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
-      <div className="divide-y divide-neutral-100">
+    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-elegant fade-in">
+      <div className="divide-y divide-gray-100">
         {interactions.map((interaction) => {
           const hasRisk = interaction.tags.some((t: string) => ['risk', 'complaint', 'churn-signal'].includes(t));
           const hasOpportunity = interaction.tags.some((t: string) => ['opportunity', 'upsell', 'success'].includes(t));
