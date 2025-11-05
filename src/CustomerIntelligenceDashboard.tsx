@@ -574,8 +574,36 @@ export function HorizontalTimeline({
 function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack: () => void }) {
   const [selectedInteractionId, setSelectedInteractionId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'timeline' | 'list'>('timeline');
-  const [filterType, setFilterType] = useState<string>('all');
-  const [filterSentiment, setFilterSentiment] = useState<string>('all');
+  const [enabledTypes, setEnabledTypes] = useState<Set<string>>(
+    new Set(['call', 'email', 'meeting', 'support', 'product-usage', 'billing'])
+  );
+  const [enabledSentiments, setEnabledSentiments] = useState<Set<string>>(
+    new Set(['very-positive', 'positive', 'neutral', 'negative', 'very-negative'])
+  );
+
+  const toggleType = (type: string) => {
+    setEnabledTypes(prev => {
+      const next = new Set(prev);
+      if (next.has(type)) {
+        next.delete(type);
+      } else {
+        next.add(type);
+      }
+      return next;
+    });
+  };
+
+  const toggleSentiment = (sentiment: string) => {
+    setEnabledSentiments(prev => {
+      const next = new Set(prev);
+      if (next.has(sentiment)) {
+        next.delete(sentiment);
+      } else {
+        next.add(sentiment);
+      }
+      return next;
+    });
+  };
   const selectedInteraction = selectedInteractionId
     ? customer.interactions.find(i => i.id === selectedInteractionId)
     : null;
@@ -590,11 +618,11 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
   // Filter interactions
   const filteredInteractions = useMemo(() => {
     return sortedInteractions.filter(interaction => {
-      if (filterType !== 'all' && interaction.type !== filterType) return false;
-      if (filterSentiment !== 'all' && interaction.sentiment !== filterSentiment) return false;
+      if (!enabledTypes.has(interaction.type)) return false;
+      if (!enabledSentiments.has(interaction.sentiment)) return false;
       return true;
     });
-  }, [sortedInteractions, filterType, filterSentiment]);
+  }, [sortedInteractions, enabledTypes, enabledSentiments]);
 
   // Group interactions by lifecycle stage
   // Note: This grouping is prepared for future use (e.g., VerticalTimeline component)
@@ -636,6 +664,23 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
     return points;
   }, [sortedInteractions]);
 
+  // Calculate the largest engagement gap for Hero Card
+  const largestGap = useMemo(() => {
+    if (sortedInteractions.length === 0) return 0;
+    let maxGap = customer.lastContactDays; // Days since last contact
+
+    // Check gaps between interactions
+    for (let i = 0; i < sortedInteractions.length - 1; i++) {
+      const gapDays = Math.floor(
+        (sortedInteractions[i + 1].timestamp.getTime() - sortedInteractions[i].timestamp.getTime()) /
+        (1000 * 60 * 60 * 24)
+      );
+      if (gapDays > maxGap) maxGap = gapDays;
+    }
+
+    return maxGap;
+  }, [sortedInteractions, customer.lastContactDays]);
+
   const handleInteractionClick = (id: string) => {
     setSelectedInteractionId(id);
   };
@@ -646,24 +691,78 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      {/* Elegant Header */}
-      <div className="bg-white border-b border-neutral-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-8 py-5">
+      {/* Minimal Sticky Header - View Toggle Only */}
+      <div className="bg-white/95 backdrop-blur-sm border-b border-neutral-200 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-8 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
+            <div className="text-sm text-neutral-600">
+              Customer Journey View
+            </div>
+            <div className="flex items-center gap-0.5 bg-neutral-100/80 rounded-lg p-0.5">
               <button
-                onClick={onBack}
-                className="flex items-center gap-2 px-3 py-2 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50 rounded-lg transition-colors"
+                onClick={() => setViewMode('timeline')}
+                className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  viewMode === 'timeline'
+                    ? 'bg-white text-neutral-900 shadow-sm'
+                    : 'text-neutral-600 hover:text-neutral-900'
+                }`}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                <span className="text-sm font-medium">Back</span>
+                📊 Timeline
               </button>
-              <div className="h-5 w-px bg-neutral-200"></div>
-              <div>
-                <h1 className="text-lg font-semibold text-neutral-900 tracking-tight">{customer.name}</h1>
-                <div className="flex items-center gap-3 text-xs text-neutral-500 mt-0.5">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  viewMode === 'list'
+                    ? 'bg-white text-neutral-900 shadow-sm'
+                    : 'text-neutral-600 hover:text-neutral-900'
+                }`}
+              >
+                📋 List
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-8 py-8">
+        {/* Layer 1: Hero Card - Progressive Disclosure "So What?" */}
+        <div className="bg-white rounded-2xl border border-neutral-200 p-12 mb-8 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <div className="flex items-baseline gap-6">
+                {/* Massive Health Score - The Focal Point */}
+                <div
+                  className="text-8xl font-black tracking-tight"
+                  style={{ color: getHealthScoreColor(customer.healthScore) }}
+                >
+                  {customer.healthScore}
+                </div>
+                <div className="flex flex-col gap-2">
+                  {/* State - Connected to Score */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl font-bold text-neutral-900 capitalize">
+                      {customer.riskLevel} Risk
+                    </span>
+                    <RiskBadge level={customer.riskLevel} />
+                  </div>
+                  {/* Reason - The "Why" */}
+                  <div className="text-base text-neutral-600">
+                    <span className="font-semibold">{largestGap}d</span> max engagement gap
+                    {customer.lastContactDays > 7 && (
+                      <span className="text-red-600 font-semibold ml-2">
+                        · {customer.lastContactDays}d since last contact
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 pt-6 border-t border-neutral-200">
+                <div className="flex items-center gap-6 text-sm text-neutral-600">
+                  <span>
+                    <span className="font-semibold text-neutral-900">{customer.name}</span>
+                  </span>
+                  <span>·</span>
                   <span className="capitalize">{customer.stage.replace('-', ' ')}</span>
                   <span>·</span>
                   <span>{formatCurrency(customer.mrr)}/mo</span>
@@ -672,99 +771,105 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
                 </div>
               </div>
             </div>
-
-            <div className="flex items-center gap-4">
-              {/* View Toggle */}
-              <div className="flex items-center gap-0.5 bg-neutral-100/80 rounded-lg p-0.5">
-                <button
-                  onClick={() => setViewMode('timeline')}
-                  className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
-                    viewMode === 'timeline'
-                      ? 'bg-white text-neutral-900 shadow-sm'
-                      : 'text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  Timeline
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
-                    viewMode === 'list'
-                      ? 'bg-white text-neutral-900 shadow-sm'
-                      : 'text-neutral-600 hover:text-neutral-900'
-                  }`}
-                >
-                  List
-                </button>
-              </div>
-
-              {/* Health Score Badge */}
-              <div className="flex items-center gap-4 px-4 py-2 bg-neutral-50 rounded-lg border border-neutral-200">
-                <div className="text-right">
-                  <div className="text-[10px] text-neutral-500 font-medium uppercase tracking-wide">Health Score</div>
-                  <div
-                    className="text-xl font-semibold mt-0.5"
-                    style={{ color: getHealthScoreColor(customer.healthScore) }}
-                  >
-                    {customer.healthScore}
-                  </div>
-                </div>
-                <RiskBadge level={customer.riskLevel} />
-              </div>
+            <div className="flex items-center gap-3 ml-8">
+              <button
+                onClick={onBack}
+                className="px-4 py-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-lg transition-colors text-sm font-medium"
+              >
+                ← Back to Dashboard
+              </button>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-8 py-8">
-        {/* Refined Filters Bar */}
-        <div className="bg-white rounded-xl border border-neutral-200 p-4 mb-6">
-          <div className="flex items-center justify-between gap-6">
-            <div className="flex items-center gap-6 flex-1">
-              <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">Filter by</div>
-
-              {/* Type Filter */}
-              <div className="flex items-center gap-2">
-                {['all', 'call', 'email', 'meeting', 'support', 'product-usage', 'billing'].map(type => (
+        {/* Layer 3: Refined Filters Bar (with custom toggle switches) */}
+        <div className="bg-white rounded-xl border border-neutral-200 p-6 mb-6">
+          <div className="space-y-5">
+            {/* Type Filters */}
+            <div>
+              <div className="text-xs font-semibold text-neutral-700 uppercase tracking-wide mb-3">Interaction Types</div>
+              <div className="flex flex-wrap items-center gap-3">
+                {['call', 'email', 'meeting', 'support', 'product-usage', 'billing'].map(type => (
                   <button
                     key={type}
-                    type="button"
-                    onClick={() => setFilterType(type)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                      filterType === type
-                        ? 'bg-neutral-900 text-white'
-                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900'
-                    }`}
+                    onClick={() => toggleType(type)}
+                    className="flex items-center gap-2 group"
                   >
-                    {type === 'all' ? 'All' : getInteractionIcon(type) + ' ' + type.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                  </button>
-                ))}
-              </div>
-
-              <div className="h-5 w-px bg-neutral-200"></div>
-
-              {/* Sentiment Filter */}
-              <div className="flex items-center gap-2">
-                {['all', 'very-positive', 'positive', 'neutral', 'negative', 'very-negative'].map(sentiment => (
-                  <button
-                    key={sentiment}
-                    type="button"
-                    onClick={() => setFilterSentiment(sentiment)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                      filterSentiment === sentiment
-                        ? 'bg-neutral-900 text-white'
-                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900'
-                    }`}
-                  >
-                    {sentiment === 'all' ? 'All' : getSentimentEmoji(sentiment)}
+                    {/* Custom Toggle Switch */}
+                    <div
+                      className={`relative w-10 h-6 rounded-full transition-all duration-200 ${
+                        enabledTypes.has(type)
+                          ? 'bg-blue-600'
+                          : 'bg-neutral-300'
+                      }`}
+                    >
+                      <div
+                        className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all duration-200 ${
+                          enabledTypes.has(type) ? 'translate-x-4' : 'translate-x-0'
+                        }`}
+                      />
+                    </div>
+                    <span className={`text-sm font-medium transition-colors ${
+                      enabledTypes.has(type) ? 'text-neutral-900' : 'text-neutral-500'
+                    }`}>
+                      {getInteractionIcon(type)} {type.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="text-xs text-neutral-500">
-              <span className="font-semibold text-neutral-900">{filteredInteractions.length}</span> of {sortedInteractions.length}
+            <div className="border-t border-neutral-200"></div>
+
+            {/* Sentiment Filters */}
+            <div>
+              <div className="text-xs font-semibold text-neutral-700 uppercase tracking-wide mb-3">Sentiment</div>
+              <div className="flex flex-wrap items-center gap-3">
+                {(['very-positive', 'positive', 'neutral', 'negative', 'very-negative'] as const).map(sentiment => (
+                  <button
+                    key={sentiment}
+                    onClick={() => toggleSentiment(sentiment)}
+                    className="flex items-center gap-2 group"
+                  >
+                    {/* Custom Toggle Switch */}
+                    <div
+                      className={`relative w-10 h-6 rounded-full transition-all duration-200 ${
+                        enabledSentiments.has(sentiment)
+                          ? 'bg-emerald-600'
+                          : 'bg-neutral-300'
+                      }`}
+                    >
+                      <div
+                        className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all duration-200 ${
+                          enabledSentiments.has(sentiment) ? 'translate-x-4' : 'translate-x-0'
+                        }`}
+                      />
+                    </div>
+                    <span className={`text-sm font-medium transition-colors ${
+                      enabledSentiments.has(sentiment) ? 'text-neutral-900' : 'text-neutral-500'
+                    }`}>
+                      {getSentimentEmoji(sentiment)} {sentiment.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t border-neutral-200 pt-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-neutral-600">
+                  Showing <span className="font-bold text-neutral-900">{filteredInteractions.length}</span> of <span className="font-semibold text-neutral-700">{sortedInteractions.length}</span> interactions
+                </span>
+                <button
+                  onClick={() => {
+                    setEnabledTypes(new Set(['call', 'email', 'meeting', 'support', 'product-usage', 'billing']));
+                    setEnabledSentiments(new Set(['very-positive', 'positive', 'neutral', 'negative', 'very-negative']));
+                  }}
+                  className="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  Reset Filters
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -896,7 +1001,7 @@ function HealthTrendChart({ healthTrend }: { healthTrend: Array<{ date: Date; sc
   );
 }
 
-// Advanced Timeline Chart Component
+// Advanced Timeline Chart Component with Zoom & Pan (Direct Manipulation)
 function AdvancedTimelineChart({
   interactions,
   onInteractionClick,
@@ -915,6 +1020,12 @@ function AdvancedTimelineChart({
   onInteractionClick: (id: string) => void;
   selectedId: string | null;
 }) {
+  const [zoom, setZoom] = useState(1); // Zoom level (1 = 100%, 2 = 200%, etc.)
+  const [panOffset, setPanOffset] = useState(0); // Pan offset in pixels
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState<{ x: number; offset: number } | null>(null);
+  const timelineRef = React.useRef<HTMLDivElement>(null);
+
   if (interactions.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-neutral-200 p-20 text-center">
@@ -932,6 +1043,49 @@ function AdvancedTimelineChart({
     return ((timestamp.getTime() - firstDate) / totalDuration) * 100;
   };
 
+  // Zoom handler - anchored to mouse pointer
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    if (!timelineRef.current) return;
+
+    const rect = timelineRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const oldZoom = zoom;
+    const newZoom = Math.max(0.5, Math.min(5, oldZoom + (e.deltaY < 0 ? 0.1 : -0.1)));
+
+    // Calculate new pan offset to keep mouse position anchored
+    const zoomRatio = newZoom / oldZoom;
+    const newPanOffset = mouseX - (mouseX - panOffset) * zoomRatio;
+
+    setZoom(newZoom);
+    setPanOffset(newPanOffset);
+  };
+
+  // Pan handlers - click & drag
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return; // Only left click
+    setIsPanning(true);
+    setPanStart({ x: e.clientX, offset: panOffset });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isPanning || !panStart) return;
+    const delta = e.clientX - panStart.x;
+    setPanOffset(panStart.offset + delta);
+  };
+
+  const handleMouseUp = () => {
+    setIsPanning(false);
+    setPanStart(null);
+  };
+
+  const handleMouseLeave = () => {
+    if (isPanning) {
+      setIsPanning(false);
+      setPanStart(null);
+    }
+  };
+
   // Detect significant gaps
   const gaps: Array<{ start: number; end: number; days: number }> = [];
   for (let i = 0; i < interactions.length - 1; i++) {
@@ -947,23 +1101,51 @@ function AdvancedTimelineChart({
 
   return (
     <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
-      {/* Timeline Header */}
+      {/* Timeline Header with Zoom Controls */}
       <div className="px-8 py-5 border-b border-neutral-200">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-neutral-900 tracking-tight">Timeline</h3>
+            <h3 className="text-sm font-semibold text-neutral-900 tracking-tight">Interactive Timeline</h3>
             <p className="text-xs text-neutral-500 mt-0.5">{interactions.length} interactions · {Math.floor(totalDuration / (1000 * 60 * 60 * 24))} days</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-neutral-500">
+              🖱️ Scroll to zoom · Drag to pan · Zoom: {Math.round(zoom * 100)}%
+            </span>
+            <button
+              onClick={() => { setZoom(1); setPanOffset(0); }}
+              className="px-3 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors"
+            >
+              Reset View
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Interactive Timeline Canvas */}
-      <div className="relative bg-white p-12 min-h-[450px]">
-        {/* Base Timeline Line */}
-        <div className="absolute top-1/2 left-16 right-16 h-px bg-neutral-200 transform -translate-y-1/2" style={{ zIndex: 2 }}></div>
+      {/* Interactive Timeline Canvas with Zoom & Pan */}
+      <div
+        ref={timelineRef}
+        className="relative bg-white p-12 min-h-[450px] overflow-hidden"
+        style={{ cursor: isPanning ? 'grabbing' : 'grab' }}
+        onWheel={handleWheel}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Transformed Timeline Content */}
+        <div
+          style={{
+            transform: `scaleX(${zoom}) translateX(${panOffset}px)`,
+            transformOrigin: 'left center',
+            transition: isPanning ? 'none' : 'transform 0.1s ease-out',
+          }}
+        >
+          {/* Base Timeline Line */}
+          <div className="absolute top-1/2 left-16 right-16 h-px bg-neutral-200 transform -translate-y-1/2" style={{ zIndex: 2 }}></div>
 
-        {/* Gap Indicators */}
-        {gaps.map((gap, idx) => (
+          {/* Gap Indicators */}
+          {gaps.map((gap, idx) => (
           <div
             key={idx}
             className="absolute top-1/4 bottom-1/4 bg-red-50/50 border border-dashed border-red-200 rounded"
@@ -1063,13 +1245,15 @@ function AdvancedTimelineChart({
           );
         })}
 
-        {/* Date Labels */}
-        <div className="absolute bottom-6 left-16 text-[10px] font-medium text-neutral-500 uppercase tracking-wide">
-          {new Date(firstDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          {/* Date Labels */}
+          <div className="absolute bottom-6 left-16 text-[10px] font-medium text-neutral-500 uppercase tracking-wide">
+            {new Date(firstDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </div>
+          <div className="absolute bottom-6 right-16 text-[10px] font-medium text-neutral-500 uppercase tracking-wide">
+            Today
+          </div>
         </div>
-        <div className="absolute bottom-6 right-16 text-[10px] font-medium text-neutral-500 uppercase tracking-wide">
-          Today
-        </div>
+        {/* End Transformed Content */}
       </div>
     </div>
   );
