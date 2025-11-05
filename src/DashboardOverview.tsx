@@ -1,37 +1,64 @@
 import { useMemo, useState } from 'react';
-import type { Customer } from './types';
+import type { Customer, RiskLevel, JourneyStage } from './types';
 import ControlPanel from './ControlPanel';
 
 interface DashboardOverviewProps {
   customers: Customer[];
   onSelectCustomer: (customerId: string) => void;
-  quickFilter: string | null;
-  onQuickFilter: (filter: string) => void;
 }
 
-const DashboardOverview = ({ customers, onSelectCustomer, quickFilter, onQuickFilter }: DashboardOverviewProps) => {
-  const [dataSources, setDataSources] = useState<Record<string, boolean>>({
-    salesforce: true,
-    five9: true,
-    nice: false,
-    ehr: false,
-    crm: true,
-  });
+const DashboardOverview = ({ customers, onSelectCustomer }: DashboardOverviewProps) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRiskLevels, setSelectedRiskLevels] = useState<RiskLevel[]>([]);
+  const [selectedStages, setSelectedStages] = useState<JourneyStage[]>([]);
 
-  const [cards, setCards] = useState<Array<{ id: string; name: string; items: string[] }>>([]);
-
-  const onToggleDataSource = (key: string) => {
-    setDataSources(prev => ({ ...prev, [key]: !prev[key] }));
+  const handleCreateCustomer = () => {
+    // TODO: Open modal or form to create new customer
+    alert('Create New Customer - Feature coming soon!\n\nThis will allow you to:\n- Input customer details\n- Upload call recordings or transcripts\n- Let AI analyze and map the customer journey');
   };
 
-  const onCreateCard = (name: string) => {
-    const id = `card-${Date.now().toString(36)}`;
-    setCards(prev => [{ id, name, items: [] }, ...prev]);
+  const handleToggleRiskLevel = (level: RiskLevel) => {
+    setSelectedRiskLevels(prev =>
+      prev.includes(level) ? prev.filter(l => l !== level) : [...prev, level]
+    );
   };
 
-  const onAddItemToCard = (cardId: string, item: string) => {
-    setCards(prev => prev.map(c => c.id === cardId ? { ...c, items: [...c.items, item] } : c));
+  const handleToggleStage = (stage: JourneyStage) => {
+    setSelectedStages(prev =>
+      prev.includes(stage) ? prev.filter(s => s !== stage) : [...prev, stage]
+    );
   };
+
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setSelectedRiskLevels([]);
+    setSelectedStages([]);
+  };
+
+  const hasActiveFilters = searchQuery.length > 0 || selectedRiskLevels.length > 0 || selectedStages.length > 0;
+
+  // Filter customers based on active filters
+  const filteredCustomers = useMemo(() => {
+    let filtered = customers;
+
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(c => c.name.toLowerCase().includes(query));
+    }
+
+    // Risk level filter
+    if (selectedRiskLevels.length > 0) {
+      filtered = filtered.filter(c => selectedRiskLevels.includes(c.riskLevel));
+    }
+
+    // Stage filter
+    if (selectedStages.length > 0) {
+      filtered = filtered.filter(c => selectedStages.includes(c.stage as JourneyStage));
+    }
+
+    return filtered;
+  }, [customers, searchQuery, selectedRiskLevels, selectedStages]);
   const metrics = useMemo(() => {
     const totalCustomers = customers.length;
     const atRisk = customers.filter(c => c.riskLevel === 'high' || c.riskLevel === 'critical').length;
@@ -137,44 +164,27 @@ const DashboardOverview = ({ customers, onSelectCustomer, quickFilter, onQuickFi
 
         {/* Control Panel */}
         <ControlPanel
-          dataSources={dataSources}
-          onToggleDataSource={onToggleDataSource}
-          onCreateCard={onCreateCard}
-          onAddItemToCard={onAddItemToCard}
-          onQuickFilter={onQuickFilter}
-          activeQuickFilter={quickFilter}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedRiskLevels={selectedRiskLevels}
+          onToggleRiskLevel={handleToggleRiskLevel}
+          selectedStages={selectedStages}
+          onToggleStage={handleToggleStage}
+          onClearFilters={handleClearFilters}
+          onCreateCustomer={handleCreateCustomer}
+          hasActiveFilters={hasActiveFilters}
         />
 
-        {/* Active Quick Filter */}
-        {quickFilter && (
-          <div className="mb-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
-              <strong>Filter:</strong>
-              <span className="capitalize">{quickFilter}</span>
-            </div>
-          </div>
-        )}
-
-        {/* User-created Cards */}
-        {cards.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-800 mb-3">Your Cards</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              {cards.map(card => (
-                <div key={card.id} className="bg-white border rounded-lg p-3 text-sm">
-                  <div className="flex items-center justify-between mb-2">
-                    <strong className="text-gray-800">{card.name}</strong>
-                    <span className="text-xs text-gray-500">{card.id}</span>
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    {card.items.length === 0 ? <em>No items</em> : (
-                      <ul className="list-disc ml-4">
-                        {card.items.map((it, i) => <li key={i}>{it}</li>)}
-                      </ul>
-                    )}
-                  </div>
-                </div>
-              ))}
+        {/* Filter Results Summary */}
+        {hasActiveFilters && (
+          <div className="mb-4 flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+            <div className="flex items-center gap-2 text-sm text-blue-800">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              <span>
+                Showing <strong>{filteredCustomers.length}</strong> of <strong>{customers.length}</strong> customers
+              </span>
             </div>
           </div>
         )}
@@ -185,7 +195,7 @@ const DashboardOverview = ({ customers, onSelectCustomer, quickFilter, onQuickFi
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {customers.map((customer) => (
+          {filteredCustomers.map((customer) => (
             <div
               key={customer.id}
               onClick={() => onSelectCustomer(customer.id)}

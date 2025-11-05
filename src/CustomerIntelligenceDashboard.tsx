@@ -12,7 +12,6 @@ export default function CustomerIntelligenceDashboard() {
   const [customers] = useState<Customer[]>(generateDemoCustomers());
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('journey');
-  const [quickFilter, setQuickFilter] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedCustomerId) {
@@ -44,19 +43,12 @@ export default function CustomerIntelligenceDashboard() {
     });
   };
 
-  const handleQuickFilter = (filter: string) => {
-    setQuickFilter(prev => prev === filter ? null : filter);
-    trackEvent({ type: 'FILTER_APPLY', payload: { filterType: 'quickFilter', value: filter } });
-  };
-
   // Show overview when no customer selected, otherwise show selected view
   if (!selectedCustomer) {
     return (
       <DashboardOverview
         customers={customers}
         onSelectCustomer={handleSelectCustomer}
-        quickFilter={quickFilter}
-        onQuickFilter={handleQuickFilter}
       />
     );
   }
@@ -68,7 +60,6 @@ export default function CustomerIntelligenceDashboard() {
         customer={selectedCustomer}
         onBack={handleBackToDashboard}
         onSwitchView={handleSwitchView}
-        initialQuickFilter={quickFilter}
       />
     );
   }
@@ -78,7 +69,6 @@ export default function CustomerIntelligenceDashboard() {
       customer={selectedCustomer}
       onBack={handleBackToDashboard}
       onSwitchView={handleSwitchView}
-      initialQuickFilter={quickFilter}
     />
   );
 }

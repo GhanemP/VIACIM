@@ -8,19 +8,11 @@ interface CustomerJourneyViewProps {
   customer: Customer;
   onBack: () => void;
   onSwitchView?: () => void;
-  initialQuickFilter?: string | null;
 }
 
-const CustomerJourneyView = ({ customer, onBack, onSwitchView, initialQuickFilter }: CustomerJourneyViewProps) => {
+const CustomerJourneyView = ({ customer, onBack, onSwitchView }: CustomerJourneyViewProps) => {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-  
-  // Apply initial quick filter if provided
-  const initialFilteredEvents = useMemo(() => {
-    if (!initialQuickFilter) return customer.interactions;
-    return customer.interactions.filter(e => e.tags.includes(initialQuickFilter as never));
-  }, [customer.interactions, initialQuickFilter]);
-  
-  const [filteredEvents, setFilteredEvents] = useState<JourneyEvent[]>(initialFilteredEvents);
+  const [filteredEvents, setFilteredEvents] = useState<JourneyEvent[]>(customer.interactions);
 
   const selectedEvent = useMemo(() => {
     if (!selectedEventId) return null;
