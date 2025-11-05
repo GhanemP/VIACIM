@@ -359,9 +359,6 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
   const [enabledTypes, setEnabledTypes] = useState<Set<string>>(
     new Set(['call', 'email', 'meeting', 'support', 'product-usage', 'billing'])
   );
-  const [enabledSentiments, setEnabledSentiments] = useState<Set<string>>(
-    new Set(['very-positive', 'positive', 'neutral', 'negative', 'very-negative'])
-  );
 
   const toggleType = (type: string) => {
     setEnabledTypes(prev => {
@@ -370,18 +367,6 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
         next.delete(type);
       } else {
         next.add(type);
-      }
-      return next;
-    });
-  };
-
-  const toggleSentiment = (sentiment: string) => {
-    setEnabledSentiments(prev => {
-      const next = new Set(prev);
-      if (next.has(sentiment)) {
-        next.delete(sentiment);
-      } else {
-        next.add(sentiment);
       }
       return next;
     });
@@ -401,10 +386,9 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
   const filteredInteractions = useMemo(() => {
     return sortedInteractions.filter(interaction => {
       if (!enabledTypes.has(interaction.type)) return false;
-      if (!enabledSentiments.has(interaction.sentiment)) return false;
       return true;
     });
-  }, [sortedInteractions, enabledTypes, enabledSentiments]);
+  }, [sortedInteractions, enabledTypes]);
 
   // Group interactions by lifecycle stage
   // Note: This grouping is prepared for future use (e.g., VerticalTimeline component)
@@ -651,42 +635,6 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
               </div>
             </div>
 
-            <div className="border-t border-neutral-200"></div>
-
-            {/* Sentiment Filters */}
-            <div>
-              <div className="text-xs font-semibold text-neutral-700 uppercase tracking-wide mb-3">Sentiment</div>
-              <div className="flex flex-wrap items-center gap-3">
-                {(['very-positive', 'positive', 'neutral', 'negative', 'very-negative'] as const).map(sentiment => (
-                  <button
-                    key={sentiment}
-                    onClick={() => toggleSentiment(sentiment)}
-                    className="flex items-center gap-2 group"
-                  >
-                    {/* Custom Toggle Switch */}
-                    <div
-                      className={`relative w-10 h-6 rounded-full transition-all duration-200 ${
-                        enabledSentiments.has(sentiment)
-                          ? 'bg-emerald-600'
-                          : 'bg-neutral-300'
-                      }`}
-                    >
-                      <div
-                        className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all duration-200 ${
-                          enabledSentiments.has(sentiment) ? 'translate-x-4' : 'translate-x-0'
-                        }`}
-                      />
-                    </div>
-                    <span className={`text-sm font-medium transition-colors ${
-                      enabledSentiments.has(sentiment) ? 'text-neutral-900' : 'text-neutral-500'
-                    }`}>
-                      {getSentimentEmoji(sentiment)} {sentiment.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <div className="border-t border-neutral-200 pt-4">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-neutral-600">
@@ -695,7 +643,6 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
                 <button
                   onClick={() => {
                     setEnabledTypes(new Set(['call', 'email', 'meeting', 'support', 'product-usage', 'billing']));
-                    setEnabledSentiments(new Set(['very-positive', 'positive', 'neutral', 'negative', 'very-negative']));
                   }}
                   className="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
                 >
