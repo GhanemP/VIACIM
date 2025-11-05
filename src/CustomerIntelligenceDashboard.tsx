@@ -886,7 +886,7 @@ function HealthTrendChart({ healthTrend }: { healthTrend: Array<{ date: Date; sc
   );
 }
 
-// Redesigned Timeline - Simple, Intuitive, Card-Based
+// Horizontal Timeline with Circular Markers
 function AdvancedTimelineChart({
   interactions,
   onInteractionClick,
@@ -913,20 +913,28 @@ function AdvancedTimelineChart({
     );
   }
 
-  // Group interactions by month
-  const groupedByMonth = useMemo(() => {
-    const groups: Record<string, typeof interactions> = {};
-    interactions.forEach(interaction => {
-      const monthKey = interaction.timestamp.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      if (!groups[monthKey]) {
-        groups[monthKey] = [];
-      }
-      groups[monthKey].push(interaction);
-    });
-    return groups;
-  }, [interactions]);
+  // Calculate date range for positioning
+  const firstDate = interactions[0].timestamp.getTime();
+  const lastDate = Math.max(...interactions.map(i => i.timestamp.getTime()), Date.now());
+  const totalDuration = lastDate - firstDate;
 
-  const monthKeys = Object.keys(groupedByMonth);
+  const getPosition = (timestamp: Date) => {
+    if (totalDuration === 0) return 50;
+    return ((timestamp.getTime() - firstDate) / totalDuration) * 100;
+  };
+
+  // Detect significant gaps (14+ days)
+  const gaps: Array<{ start: number; end: number; days: number }> = [];
+  for (let i = 0; i < interactions.length - 1; i++) {
+    const gapDays = Math.floor((interactions[i + 1].timestamp.getTime() - interactions[i].timestamp.getTime()) / (1000 * 60 * 60 * 24));
+    if (gapDays > 14) {
+      gaps.push({
+        start: getPosition(interactions[i].timestamp),
+        end: getPosition(interactions[i + 1].timestamp),
+        days: gapDays,
+      });
+    }
+  }
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-elegant fade-in">
@@ -940,141 +948,139 @@ function AdvancedTimelineChart({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              Timeline View
+              Interactive Timeline
             </h3>
             <p className="text-sm text-gray-600 mt-2 ml-13">
-              {interactions.length} interactions across {monthKeys.length} {monthKeys.length === 1 ? 'month' : 'months'}
+              {interactions.length} interactions · {Math.floor(totalDuration / (1000 * 60 * 60 * 24))} days span
             </p>
           </div>
         </div>
       </div>
 
-      {/* Scrollable Timeline Content */}
-      <div className="p-8 max-h-[800px] overflow-y-auto">
-        <div className="space-y-8">
-          {monthKeys.map((monthKey, monthIndex) => {
-            const monthInteractions = groupedByMonth[monthKey];
+      {/* Horizontal Timeline */}
+      <div className="relative px-16 py-24 min-h-[400px] overflow-x-auto">
+        {/* Timeline Base Line */}
+        <div className="absolute left-16 right-16 top-1/2 h-1 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 transform -translate-y-1/2 rounded-full"></div>
 
-            return (
-              <div key={monthKey} className="relative">
-                {/* Month Header */}
-                <div className="sticky top-0 z-10 bg-gradient-to-r from-gray-50 to-white px-4 py-3 rounded-xl border border-gray-200 mb-6 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
-                      {monthInteractions.length}
-                    </div>
-                    <h4 className="text-lg font-bold text-gray-900">{monthKey}</h4>
-                  </div>
-                </div>
-
-                {/* Interaction Cards */}
-                <div className="space-y-4 pl-6 border-l-2 border-gray-200">
-                  {monthInteractions.map((interaction) => {
-                    const isSelected = selectedId === interaction.id;
-                    const hasRisk = interaction.tags.some(t => ['risk', 'complaint', 'churn-signal'].includes(t));
-                    const hasOpportunity = interaction.tags.some(t => ['opportunity', 'upsell', 'success'].includes(t));
-                    const isChampion = interaction.tags.includes('champion');
-
-                    let borderColor = 'border-gray-200';
-                    let bgGradient = 'from-white to-gray-50';
-                    let iconBg = 'from-gray-600 to-gray-700';
-
-                    if (hasRisk) {
-                      borderColor = 'border-red-300';
-                      bgGradient = 'from-red-50 to-rose-50';
-                      iconBg = 'from-red-600 to-rose-600';
-                    } else if (hasOpportunity) {
-                      borderColor = 'border-emerald-300';
-                      bgGradient = 'from-emerald-50 to-green-50';
-                      iconBg = 'from-emerald-600 to-green-600';
-                    }
-
-                    return (
-                      <div key={interaction.id} className="relative -ml-6">
-                        {/* Timeline Dot */}
-                        <div className={`absolute left-0 top-6 w-4 h-4 rounded-full border-4 border-white shadow-md ${
-                          hasRisk ? 'bg-red-500' : hasOpportunity ? 'bg-emerald-500' : 'bg-gray-400'
-                        }`}></div>
-
-                        {/* Interaction Card */}
-                        <div className="ml-8">
-                          <button
-                            onClick={() => onInteractionClick(interaction.id)}
-                            className={`w-full text-left bg-gradient-to-br ${bgGradient} rounded-xl border-2 ${borderColor} p-6 hover-lift transition-all ${
-                              isSelected ? 'ring-4 ring-violet-300 shadow-xl scale-[1.02]' : 'shadow-sm'
-                            } group`}
-                          >
-                            <div className="flex items-start gap-4">
-                              {/* Icon */}
-                              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${iconBg} flex items-center justify-center text-2xl shadow-md flex-shrink-0 group-hover:scale-110 transition-transform`}>
-                                {getInteractionIcon(interaction.type)}
-                              </div>
-
-                              {/* Content */}
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-4 mb-2">
-                                  <div className="flex items-center gap-2 flex-1">
-                                    <h5 className="font-bold text-gray-900 text-base">{interaction.title}</h5>
-                                    {isChampion && <span className="text-lg">👑</span>}
-                                  </div>
-                                  <div className="text-xs font-medium text-gray-500 whitespace-nowrap">
-                                    {interaction.timestamp.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                    {' · '}
-                                    {interaction.timestamp.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-                                  </div>
-                                </div>
-
-                                <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
-                                  {interaction.summary}
-                                </p>
-
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="px-3 py-1 rounded-lg text-xs font-bold bg-white border border-gray-200 text-gray-700 capitalize">
-                                    {interaction.type.replace('-', ' ')}
-                                  </span>
-                                  {interaction.tags.slice(0, 4).map(tag => {
-                                    const isRiskTag = ['risk', 'complaint', 'churn-signal'].includes(tag);
-                                    const isOppTag = ['opportunity', 'upsell', 'success'].includes(tag);
-                                    return (
-                                      <span
-                                        key={tag}
-                                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
-                                          isRiskTag ? 'bg-red-100 text-red-700 border border-red-200' :
-                                          isOppTag ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
-                                          'bg-gray-100 text-gray-700 border border-gray-200'
-                                        }`}
-                                      >
-                                        {tag}
-                                      </span>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-
-                              {/* Arrow */}
-                              <svg className={`w-6 h-6 text-gray-400 group-hover:text-violet-600 transform group-hover:translate-x-1 transition-all flex-shrink-0 ${
-                                isSelected ? 'text-violet-600' : ''
-                              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                              </svg>
-                            </div>
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Gap Indicator between months */}
-                {monthIndex < monthKeys.length - 1 && (
-                  <div className="mt-8 mb-4 flex items-center gap-3 pl-6">
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        {/* Start Date Marker */}
+        <div className="absolute left-16 top-1/2 transform -translate-y-1/2">
+          <div className="w-3 h-3 bg-violet-600 rounded-full shadow-md"></div>
+          <div className="absolute top-12 left-1/2 transform -translate-x-1/2 text-xs font-semibold text-gray-600 whitespace-nowrap">
+            {new Date(firstDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </div>
         </div>
+
+        {/* End Date Marker (Today) */}
+        <div className="absolute right-16 top-1/2 transform -translate-y-1/2">
+          <div className="w-3 h-3 bg-violet-600 rounded-full shadow-md"></div>
+          <div className="absolute top-12 left-1/2 transform -translate-x-1/2 text-xs font-semibold text-gray-600 whitespace-nowrap">
+            Today
+          </div>
+        </div>
+
+        {/* Gap Indicators */}
+        {gaps.map((gap, idx) => (
+          <div
+            key={idx}
+            className="absolute top-1/4 bottom-1/4 bg-yellow-50/80 border-2 border-dashed border-yellow-400 rounded-lg"
+            style={{
+              left: `calc(4rem + (100% - 8rem) * ${gap.start / 100})`,
+              right: `calc(4rem + (100% - 8rem) * ${(100 - gap.end) / 100})`,
+              zIndex: 1,
+            }}
+          >
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow-400 text-white px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap shadow-md">
+              ⚠️ {gap.days}d gap
+            </div>
+          </div>
+        ))}
+
+        {/* Circular Markers */}
+        {interactions.map((interaction, index) => {
+          const position = getPosition(interaction.timestamp);
+          const isSelected = selectedId === interaction.id;
+          const hasRisk = interaction.tags.some(t => ['risk', 'complaint', 'churn-signal'].includes(t));
+          const hasOpportunity = interaction.tags.some(t => ['opportunity', 'upsell', 'success'].includes(t));
+          const isChampion = interaction.tags.includes('champion');
+
+          // Determine color scheme
+          let borderColor = 'border-gray-400';
+          let textColor = 'text-gray-600';
+          let iconColor = 'text-gray-600';
+          let bgColor = 'bg-white';
+
+          if (hasRisk) {
+            borderColor = 'border-red-500';
+            textColor = 'text-red-600';
+            iconColor = 'text-red-600';
+          } else if (hasOpportunity) {
+            borderColor = 'border-green-500';
+            textColor = 'text-green-600';
+            iconColor = 'text-green-600';
+          }
+
+          // Alternate above/below for spacing
+          const isAbove = index % 2 === 0;
+
+          return (
+            <div
+              key={interaction.id}
+              className="absolute top-1/2 transform -translate-x-1/2 -translate-y-1/2 group"
+              style={{
+                left: `calc(4rem + (100% - 8rem) * ${position / 100})`,
+                zIndex: isSelected ? 20 : 10,
+              }}
+            >
+              {/* Text Label (Above/Below) */}
+              <div className={`absolute ${isAbove ? '-top-8' : 'top-16'} left-1/2 transform -translate-x-1/2 text-xs font-semibold ${textColor} whitespace-nowrap`}>
+                {interaction.title.length > 20 ? interaction.title.substring(0, 20) + '...' : interaction.title}
+              </div>
+
+              {/* Clickable Area with Tooltip */}
+              <button
+                onClick={() => onInteractionClick(interaction.id)}
+                className="relative"
+              >
+                {/* Hover Tooltip */}
+                <div className="absolute bottom-full mb-4 left-1/2 transform -translate-x-1/2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 z-30 pointer-events-none">
+                  <div className="bg-gray-900 text-white px-4 py-3 rounded-lg shadow-xl min-w-[280px] max-w-[320px]">
+                    <div className="text-sm font-bold mb-1">{interaction.title}</div>
+                    <div className="text-xs text-gray-300 mb-2">
+                      {interaction.timestamp.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit'
+                      })}
+                    </div>
+                    <div className="text-xs text-gray-200 line-clamp-2">{interaction.summary}</div>
+                    <div className="flex gap-1 mt-2 flex-wrap">
+                      {interaction.tags.slice(0, 3).map(tag => (
+                        <span key={tag} className="px-2 py-0.5 bg-gray-700 rounded text-[10px]">{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Circular Marker */}
+                <div className={`flex items-center justify-center w-12 h-12 ${bgColor} border-4 ${borderColor} rounded-full shadow-lg transition-all duration-200 ${
+                  isSelected ? 'scale-125 ring-4 ring-violet-300' : 'group-hover:scale-110'
+                } ${hasRisk ? 'animate-pulse' : ''}`}>
+                  {/* Icon */}
+                  <span className={`text-2xl ${iconColor}`}>
+                    {getInteractionIcon(interaction.type)}
+                  </span>
+                </div>
+
+                {/* Champion Badge */}
+                {isChampion && (
+                  <div className="absolute -top-2 -right-2 text-lg">👑</div>
+                )}
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
