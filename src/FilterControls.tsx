@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import type { JourneyEvent } from './types';
 
 interface FilterControlsProps {
@@ -32,11 +32,11 @@ const FilterControls: React.FC<FilterControlsProps> = ({ events, onFilterChange 
     onFilterChange(filtered);
   }, [searchTerm, selectedChannels, events, onFilterChange]);
 
-  const handleChannelChange = (channel: string) => {
+  const handleChannelChange = useCallback((channel: string) => {
     setSelectedChannels(prev =>
       prev.includes(channel) ? prev.filter(t => t !== channel) : [...prev, channel]
     );
-  };
+  }, []);
   
   // Initialize selected channels to all available channels
   useEffect(() => {

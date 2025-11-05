@@ -3,7 +3,6 @@ import type { JourneyEvent, JourneySummary } from './types';
 
 interface JourneyNarrationProps {
   events: JourneyEvent[];
-  customerName: string;
 }
 
 // S10: Generate journey narration from events
@@ -118,7 +117,7 @@ const generateNarration = (events: JourneyEvent[]): JourneySummary['narration'] 
   };
 };
 
-const JourneyNarration = ({ events, customerName }: JourneyNarrationProps) => {
+const JourneyNarration = ({ events }: JourneyNarrationProps) => {
   const narration = useMemo(() => generateNarration(events), [events]);
 
   return (

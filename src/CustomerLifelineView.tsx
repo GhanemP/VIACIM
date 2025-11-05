@@ -239,7 +239,7 @@ const CustomerLifelineView = ({ customer, onBack, onSwitchView }: CustomerLifeli
       </header>
 
       {/* Narration Bar */}
-      <JourneyNarration events={filteredEvents} customerName={customer.name} />
+      <JourneyNarration events={filteredEvents} />
 
       {/* Filters */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
