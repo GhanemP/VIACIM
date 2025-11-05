@@ -5,9 +5,11 @@ import ControlPanel from './ControlPanel';
 interface DashboardOverviewProps {
   customers: Customer[];
   onSelectCustomer: (customerId: string) => void;
+  quickFilter: string | null;
+  onQuickFilter: (filter: string) => void;
 }
 
-const DashboardOverview = ({ customers, onSelectCustomer }: DashboardOverviewProps) => {
+const DashboardOverview = ({ customers, onSelectCustomer, quickFilter, onQuickFilter }: DashboardOverviewProps) => {
   const [dataSources, setDataSources] = useState<Record<string, boolean>>({
     salesforce: true,
     five9: true,
@@ -17,7 +19,6 @@ const DashboardOverview = ({ customers, onSelectCustomer }: DashboardOverviewPro
   });
 
   const [cards, setCards] = useState<Array<{ id: string; name: string; items: string[] }>>([]);
-  const [quickFilter, setQuickFilter] = useState<string | null>(null);
 
   const onToggleDataSource = (key: string) => {
     setDataSources(prev => ({ ...prev, [key]: !prev[key] }));
@@ -30,12 +31,6 @@ const DashboardOverview = ({ customers, onSelectCustomer }: DashboardOverviewPro
 
   const onAddItemToCard = (cardId: string, item: string) => {
     setCards(prev => prev.map(c => c.id === cardId ? { ...c, items: [...c.items, item] } : c));
-  };
-
-  const onQuickFilter = (filter: string) => {
-    setQuickFilter(filter);
-    // TODO: wire this to the timeline/filter system; for now just telemetry
-    console.log('Quick filter applied:', filter);
   };
   const metrics = useMemo(() => {
     const totalCustomers = customers.length;
@@ -147,6 +142,7 @@ const DashboardOverview = ({ customers, onSelectCustomer }: DashboardOverviewPro
           onCreateCard={onCreateCard}
           onAddItemToCard={onAddItemToCard}
           onQuickFilter={onQuickFilter}
+          activeQuickFilter={quickFilter}
         />
 
         {/* Active Quick Filter */}

@@ -9,6 +9,7 @@ interface CustomerLifelineViewProps {
   customer: Customer;
   onBack: () => void;
   onSwitchView?: () => void;
+  initialQuickFilter?: string | null;
 }
 
 // S6: URL state sync helpers
@@ -41,7 +42,7 @@ const useURLState = () => {
   return { urlParams, updateURL };
 };
 
-const CustomerLifelineView = ({ customer, onBack, onSwitchView }: CustomerLifelineViewProps) => {
+const CustomerLifelineView = ({ customer, onBack, onSwitchView, initialQuickFilter }: CustomerLifelineViewProps) => {
   const { urlParams, updateURL } = useURLState();
 
   // S6: Initialize state from URL
@@ -55,10 +56,16 @@ const CustomerLifelineView = ({ customer, onBack, onSwitchView }: CustomerLifeli
     const tagsParam = urlParams.get('tags');
     const windowParam = urlParams.get('window');
 
+    // Apply initial quick filter if provided
+    const initialTags = tagsParam ? (tagsParam.split(',') as TagType[]) : [];
+    if (initialQuickFilter && !initialTags.includes(initialQuickFilter as TagType)) {
+      initialTags.push(initialQuickFilter as TagType);
+    }
+
     return {
       channels: channelsParam ? (channelsParam.split(',') as ChannelType[]) : ['voice', 'email', 'crm', 'chat'],
       stages: stagesParam ? (stagesParam.split(',') as JourneyStage[]) : ['Acquisition', 'Onboarding', 'Support', 'Renewal'],
-      tags: tagsParam ? (tagsParam.split(',') as TagType[]) : [],
+      tags: initialTags,
       timeWindow: (windowParam === '12m' || windowParam === '90d' || windowParam === '30d') ? windowParam : 'all',
       searchQuery: urlParams.get('q') || '',
     };
