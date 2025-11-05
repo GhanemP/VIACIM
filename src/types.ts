@@ -1,133 +1,76 @@
 // Core Data Types for Customer Journey Intelligence System
 
-export type LifecycleStage = 
-  | 'prospect' 
-  | 'onboarding' 
-  | 'adoption' 
-  | 'active' 
-  | 'at-risk' 
-  | 'expansion' 
-  | 'churned';
+export type JourneyStage = 'Acquisition' | 'Onboarding' | 'Support' | 'Renewal';
 
-export type InteractionType = 
-  | 'call' 
-  | 'email' 
-  | 'meeting' 
-  | 'support' 
-  | 'product-usage' 
-  | 'billing';
+export type ChannelType = 'voice' | 'email' | 'crm' | 'chat';
 
-export type SentimentType = 
-  | 'very-positive' 
-  | 'positive' 
-  | 'neutral' 
-  | 'negative' 
-  | 'very-negative';
+export type TagType = 'risk' | 'opportunity' | 'flag' | 'compliance';
+
+export interface JourneyEvent {
+  id: string;
+  ts: string; // ISO-8601
+  stage: JourneyStage;
+  channel: ChannelType;
+  title: string;
+  summary: string;
+  durationSec: number;
+  agent: string;
+  customer: string;
+  tags: TagType[];
+  score: {
+    risk: number;
+    opportunity: number;
+  };
+  conversation_id: string;
+  span_id: string;
+  record: {
+    system: string;
+    object: string;
+    record_id: string;
+  };
+  // Adding fields from old model that are still useful and likely implied
+  sentiment: 'very-positive' | 'positive' | 'neutral' | 'negative' | 'very-negative';
+  participants: string[];
+  transcript?: string;
+  aiInsights?: AIInsight[];
+  recommendedActions?: RecommendedAction[];
+}
 
 export type RiskLevel = 'low' | 'medium' | 'high' | 'critical';
 
-export type TagType = 
-  | 'risk' 
-  | 'opportunity' 
-  | 'champion' 
-  | 'complaint' 
-  | 'upsell' 
-  | 'churn-signal' 
-  | 'success' 
-  | 'competitor-mention'
-  | 'feature-request'
-  | 'billing-issue';
+// Simplified from old model to align with new spec's focus
+export interface Customer {
+  id: string;
+  name: string;
+  stage: string;
+  healthScore: number; // 0-100
+  mrr: number;
+  tenure: number; // months
+  riskLevel: RiskLevel;
+  lastContactDays: number;
+  assignedTo: string;
+  interactions: JourneyEvent[]; // Renamed from Interaction to JourneyEvent
+}
 
 // AI-generated insights from interaction analysis
 export interface AIInsight {
   id: string;
-  type: 'risk' | 'opportunity' | 'competitor' | 'sentiment' | 'action-required';
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  icon?: string;
   title: string;
   description: string;
-  confidence: number; // 0-100
-  icon?: string;
 }
 
 // Recommended actions based on AI analysis
 export interface RecommendedAction {
   id: string;
   title: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  category: 'follow-up' | 'escalation' | 'upsell' | 'support' | 'retention';
-  dueDate?: Date;
-  estimatedImpact?: string;
 }
 
-// Individual customer interaction/touchpoint
-export interface Interaction {
-  id: string;
-  customerId: string;
-  timestamp: Date;
-  type: InteractionType;
-  stage: LifecycleStage;
-  title: string;
-  summary: string;
-  sentiment: SentimentType;
-  tags: TagType[];
-  duration?: number; // minutes
-  participants: string[];
-  transcript?: string;
-  aiInsights: AIInsight[];
-  recommendedActions: RecommendedAction[];
-  metadata?: {
-    dealValue?: number;
-    responseTime?: number;
-    resolution?: string;
-    competitorMentioned?: string;
-    churnRiskScore?: number;
-  };
-}
-
-// Gap in communication/engagement
-export interface EngagementGap {
-  startDate: Date;
-  endDate: Date;
-  durationDays: number;
-  riskLevel: RiskLevel;
-  recommendation: string;
-}
-
-// Customer entity with full journey context
-export interface Customer {
-  id: string;
-  name: string;
-  tier: 'basic' | 'professional' | 'enterprise';
-  stage: LifecycleStage;
-  healthScore: number; // 0-100
-  mrr: number;
-  tenure: number; // months
-  riskLevel: RiskLevel;
-  lastContactDays: number;
-  assignedTo: string; // CSM name
-  interactions: Interaction[];
-  engagementGaps: EngagementGap[];
-  contractRenewalDate?: Date;
-  ltv?: number; // lifetime value
-  churnProbability?: number; // 0-100
-}
-
-// Dashboard metrics
+// Dashboard metrics - kept for the main dashboard view
 export interface DashboardMetrics {
   totalCustomers: number;
   atRiskCount: number;
   totalMRR: number;
   avgHealthScore: number;
   activeOpportunities: number;
-  churnRate?: number;
-  expansionRevenue?: number;
-}
-
-// Filter options for dashboard
-export interface FilterOptions {
-  stage?: LifecycleStage[];
-  riskLevel?: RiskLevel[];
-  healthScoreRange?: [number, number];
-  searchQuery?: string;
-  assignedTo?: string[];
 }
