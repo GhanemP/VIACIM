@@ -8,6 +8,7 @@ import type {
   RecommendedAction,
   JourneyStage,
   ChannelType,
+  PriorityLevel,
 } from './types';
 
 /**
@@ -72,6 +73,7 @@ function createRiversidePlumbing(): Customer {
       // Initial contact - positive start
       createJourneyEvent({
         id: 'int-001-01',
+        customer_id: 'cust-001',
         ts: new Date(baseDate.getTime()).toISOString(),
         stage: 'Acquisition',
         channel: 'voice',
@@ -89,6 +91,7 @@ function createRiversidePlumbing(): Customer {
 
       createJourneyEvent({
         id: 'int-001-02',
+        customer_id: 'cust-001',
         ts: addDays(baseDate, 2).toISOString(),
         stage: 'Acquisition',
         channel: 'email',
@@ -104,6 +107,7 @@ function createRiversidePlumbing(): Customer {
       // Contract signed - big win!
       createJourneyEvent({
         id: 'int-001-03',
+        customer_id: 'cust-001',
         ts: addDays(baseDate, 5).toISOString(),
         stage: 'Onboarding',
         channel: 'voice',
@@ -121,6 +125,7 @@ function createRiversidePlumbing(): Customer {
       // Onboarding phase
       createJourneyEvent({
         id: 'int-001-04',
+        customer_id: 'cust-001',
         ts: addDays(baseDate, 7).toISOString(),
         stage: 'Onboarding',
         channel: 'crm', // Changed from meeting to crm
@@ -137,6 +142,7 @@ function createRiversidePlumbing(): Customer {
       // Early success
       createJourneyEvent({
         id: 'int-001-05',
+        customer_id: 'cust-001',
         ts: addDays(baseDate, 21).toISOString(),
         stage: 'Support', // Changed from adoption to Support
         channel: 'voice',
@@ -153,6 +159,7 @@ function createRiversidePlumbing(): Customer {
       // Product usage milestone
       createJourneyEvent({
         id: 'int-001-06',
+        customer_id: 'cust-001',
         ts: addDays(baseDate, 30).toISOString(),
         stage: 'Support', // Changed from active to Support
         channel: 'chat', // Changed from product-usage to chat
@@ -167,6 +174,7 @@ function createRiversidePlumbing(): Customer {
 
       createJourneyEvent({
         id: 'int-001-07',
+        customer_id: 'cust-001',
         ts: addDays(baseDate, 45).toISOString(),
         stage: 'Support',
         channel: 'voice',
@@ -185,6 +193,7 @@ function createRiversidePlumbing(): Customer {
       // Service degradation - CRISIS
       createJourneyEvent({
         id: 'int-001-08',
+        customer_id: 'cust-001',
         ts: addDays(baseDate, 165).toISOString(),
         stage: 'Support',
         channel: 'voice',
@@ -212,6 +221,7 @@ function createRiversidePlumbing(): Customer {
       // Resolution attempt
       createJourneyEvent({
         id: 'int-001-09',
+        customer_id: 'cust-001',
         ts: addDays(baseDate, 167).toISOString(),
         stage: 'Support',
         channel: 'voice',
@@ -230,6 +240,7 @@ function createRiversidePlumbing(): Customer {
       // Recovery phase
       createJourneyEvent({
         id: 'int-001-10',
+        customer_id: 'cust-001',
         ts: addDays(baseDate, 174).toISOString(),
         stage: 'Support',
         channel: 'voice',
@@ -245,6 +256,7 @@ function createRiversidePlumbing(): Customer {
 
       createJourneyEvent({
         id: 'int-001-11',
+        customer_id: 'cust-001',
         ts: addDays(baseDate, 181).toISOString(),
         stage: 'Renewal',
         channel: 'voice',
@@ -283,6 +295,7 @@ function createGoldenDragon(): Customer {
     interactions: [
       createJourneyEvent({
         id: 'int-002-01',
+        customer_id: 'cust-002',
         ts: baseDate.toISOString(),
         stage: 'Acquisition',
         channel: 'voice',
@@ -298,6 +311,7 @@ function createGoldenDragon(): Customer {
 
       createJourneyEvent({
         id: 'int-002-02',
+        customer_id: 'cust-002',
         ts: addDays(baseDate, 3).toISOString(),
         stage: 'Onboarding',
         channel: 'voice',
@@ -313,6 +327,7 @@ function createGoldenDragon(): Customer {
 
       createJourneyEvent({
         id: 'int-002-03',
+        customer_id: 'cust-002',
         ts: addDays(baseDate, 30).toISOString(),
         stage: 'Onboarding',
         channel: 'chat',
@@ -326,6 +341,7 @@ function createGoldenDragon(): Customer {
 
       createJourneyEvent({
         id: 'int-002-04',
+        customer_id: 'cust-002',
         ts: addDays(baseDate, 45).toISOString(),
         stage: 'Support',
         channel: 'crm',
@@ -342,6 +358,7 @@ function createGoldenDragon(): Customer {
 
       createJourneyEvent({
         id: 'int-002-05',
+        customer_id: 'cust-002',
         ts: addDays(baseDate, 47).toISOString(),
         stage: 'Support',
         channel: 'voice',
@@ -363,6 +380,7 @@ function createGoldenDragon(): Customer {
 
       createJourneyEvent({
         id: 'int-002-06',
+        customer_id: 'cust-002',
         ts: addDays(baseDate, 48).toISOString(),
         stage: 'Renewal',
         channel: 'email',
@@ -377,6 +395,7 @@ function createGoldenDragon(): Customer {
 
       createJourneyEvent({
         id: 'int-002-07',
+        customer_id: 'cust-002',
         ts: addDays(baseDate, 52).toISOString(),
         stage: 'Renewal',
         channel: 'voice',
@@ -393,6 +412,7 @@ function createGoldenDragon(): Customer {
 
       createJourneyEvent({
         id: 'int-002-08',
+        customer_id: 'cust-002',
         ts: addDays(baseDate, 90).toISOString(),
         stage: 'Renewal',
         channel: 'voice',
@@ -429,6 +449,7 @@ function createSummitRoofing(): Customer {
     interactions: [
       createJourneyEvent({
         id: 'int-003-01',
+        customer_id: 'cust-003',
         ts: baseDate.toISOString(),
         stage: 'Acquisition',
         channel: 'crm',
@@ -443,6 +464,7 @@ function createSummitRoofing(): Customer {
       }),
       createJourneyEvent({
         id: 'int-003-02',
+        customer_id: 'cust-003',
         ts: addDays(baseDate, 7).toISOString(),
         stage: 'Onboarding',
         channel: 'voice',
@@ -457,6 +479,7 @@ function createSummitRoofing(): Customer {
       }),
       createJourneyEvent({
         id: 'int-003-03',
+        customer_id: 'cust-003',
         ts: addDays(baseDate, 10).toISOString(),
         stage: 'Onboarding',
         channel: 'crm',
@@ -471,6 +494,7 @@ function createSummitRoofing(): Customer {
       }),
       createJourneyEvent({
         id: 'int-003-04',
+        customer_id: 'cust-003',
         ts: addDays(baseDate, 20).toISOString(),
         stage: 'Onboarding',
         channel: 'voice',
@@ -508,6 +532,7 @@ function createPrestigeAuto(): Customer {
     interactions: [
       createJourneyEvent({
         id: 'int-004-01',
+        customer_id: 'cust-004',
         ts: baseDate.toISOString(),
         stage: 'Acquisition',
         channel: 'voice',
@@ -523,6 +548,7 @@ function createPrestigeAuto(): Customer {
       }),
       createJourneyEvent({
         id: 'int-004-02',
+        customer_id: 'cust-004',
         ts: addDays(baseDate, 2).toISOString(),
         stage: 'Acquisition',
         channel: 'email',
@@ -536,6 +562,7 @@ function createPrestigeAuto(): Customer {
       }),
       createJourneyEvent({
         id: 'int-004-03',
+        customer_id: 'cust-004',
         ts: addDays(baseDate, 10).toISOString(),
         stage: 'Acquisition',
         channel: 'voice',
@@ -572,6 +599,7 @@ function createEliteLandscaping(): Customer {
         interactions: [
             createJourneyEvent({
                 id: 'int-005-01',
+        customer_id: 'cust-005',
                 ts: baseDate.toISOString(),
                 stage: 'Acquisition',
                 channel: 'voice',
@@ -586,6 +614,7 @@ function createEliteLandscaping(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-005-02',
+        customer_id: 'cust-005',
                 ts: addDays(baseDate, 1).toISOString(),
                 stage: 'Onboarding',
                 channel: 'voice',
@@ -600,6 +629,7 @@ function createEliteLandscaping(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-005-03',
+        customer_id: 'cust-005',
                 ts: addDays(baseDate, 60).toISOString(),
                 stage: 'Support',
                 channel: 'voice',
@@ -617,6 +647,7 @@ function createEliteLandscaping(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-005-04',
+        customer_id: 'cust-005',
                 ts: addDays(baseDate, 120).toISOString(),
                 stage: 'Support',
                 channel: 'email',
@@ -630,6 +661,7 @@ function createEliteLandscaping(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-005-05',
+        customer_id: 'cust-005',
                 ts: addDays(baseDate, 180).toISOString(),
                 stage: 'Renewal',
                 channel: 'voice',
@@ -666,6 +698,7 @@ function createMetroCarpetCare(): Customer {
         interactions: [
             createJourneyEvent({
                 id: 'int-006-01',
+        customer_id: 'cust-006',
                 ts: baseDate.toISOString(),
                 stage: 'Acquisition',
                 channel: 'voice',
@@ -680,6 +713,7 @@ function createMetroCarpetCare(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-006-02',
+        customer_id: 'cust-006',
                 ts: addDays(baseDate, 5).toISOString(),
                 stage: 'Onboarding',
                 channel: 'voice',
@@ -694,6 +728,7 @@ function createMetroCarpetCare(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-006-03',
+        customer_id: 'cust-006',
                 ts: addDays(baseDate, 40).toISOString(),
                 stage: 'Support',
                 channel: 'voice',
@@ -709,6 +744,7 @@ function createMetroCarpetCare(): Customer {
             // === GAP: 60 days of silence ===
             createJourneyEvent({
                 id: 'int-006-04',
+        customer_id: 'cust-006',
                 ts: addDays(baseDate, 100).toISOString(),
                 stage: 'Support',
                 channel: 'chat',
@@ -745,6 +781,7 @@ function createUrbanDentalGroup(): Customer {
         interactions: [
             createJourneyEvent({
                 id: 'int-007-01',
+        customer_id: 'cust-007',
                 ts: baseDate.toISOString(),
                 stage: 'Acquisition',
                 channel: 'voice',
@@ -759,6 +796,7 @@ function createUrbanDentalGroup(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-007-02',
+        customer_id: 'cust-007',
                 ts: addDays(baseDate, 4).toISOString(),
                 stage: 'Onboarding',
                 channel: 'voice',
@@ -773,6 +811,7 @@ function createUrbanDentalGroup(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-007-03',
+        customer_id: 'cust-007',
                 ts: addDays(baseDate, 30).toISOString(),
                 stage: 'Support',
                 channel: 'voice',
@@ -787,6 +826,7 @@ function createUrbanDentalGroup(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-007-04',
+        customer_id: 'cust-007',
                 ts: addDays(baseDate, 60).toISOString(),
                 stage: 'Support',
                 channel: 'voice',
@@ -801,6 +841,7 @@ function createUrbanDentalGroup(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-007-05',
+        customer_id: 'cust-007',
                 ts: addDays(baseDate, 90).toISOString(),
                 stage: 'Renewal',
                 channel: 'voice',
@@ -815,6 +856,7 @@ function createUrbanDentalGroup(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-007-06',
+        customer_id: 'cust-007',
                 ts: addDays(baseDate, 120).toISOString(),
                 stage: 'Renewal',
                 channel: 'email',
@@ -850,6 +892,7 @@ function createCoastalHVAC(): Customer {
         interactions: [
             createJourneyEvent({
                 id: 'int-008-01',
+        customer_id: 'cust-008',
                 ts: baseDate.toISOString(),
                 stage: 'Acquisition',
                 channel: 'voice',
@@ -864,6 +907,7 @@ function createCoastalHVAC(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-008-02',
+        customer_id: 'cust-008',
                 ts: addDays(baseDate, 3).toISOString(),
                 stage: 'Onboarding',
                 channel: 'voice',
@@ -878,6 +922,7 @@ function createCoastalHVAC(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-008-03',
+        customer_id: 'cust-008',
                 ts: addDays(baseDate, 35).toISOString(),
                 stage: 'Support',
                 channel: 'voice',
@@ -892,6 +937,7 @@ function createCoastalHVAC(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-008-04',
+        customer_id: 'cust-008',
                 ts: addDays(baseDate, 90).toISOString(),
                 stage: 'Support',
                 channel: 'crm',
@@ -906,6 +952,7 @@ function createCoastalHVAC(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-008-05',
+        customer_id: 'cust-008',
                 ts: addDays(baseDate, 93).toISOString(),
                 stage: 'Support',
                 channel: 'voice',
@@ -920,6 +967,7 @@ function createCoastalHVAC(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-008-06',
+        customer_id: 'cust-008',
                 ts: addDays(baseDate, 96).toISOString(),
                 stage: 'Support',
                 channel: 'crm',
@@ -955,6 +1003,7 @@ function createPrimeLocksmith(): Customer {
         interactions: [
             createJourneyEvent({
                 id: 'int-009-01',
+        customer_id: 'cust-009',
                 ts: baseDate.toISOString(),
                 stage: 'Acquisition',
                 channel: 'voice',
@@ -969,6 +1018,7 @@ function createPrimeLocksmith(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-009-02',
+        customer_id: 'cust-009',
                 ts: addDays(baseDate, 6).toISOString(),
                 stage: 'Onboarding',
                 channel: 'voice',
@@ -983,6 +1033,7 @@ function createPrimeLocksmith(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-009-03',
+        customer_id: 'cust-009',
                 ts: addDays(baseDate, 30).toISOString(),
                 stage: 'Support',
                 channel: 'voice',
@@ -998,6 +1049,7 @@ function createPrimeLocksmith(): Customer {
             // === GAP: 45 days ===
             createJourneyEvent({
                 id: 'int-009-04',
+        customer_id: 'cust-009',
                 ts: addDays(baseDate, 75).toISOString(),
                 stage: 'Support',
                 channel: 'email',
@@ -1011,6 +1063,7 @@ function createPrimeLocksmith(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-009-05',
+        customer_id: 'cust-009',
                 ts: addDays(baseDate, 90).toISOString(),
                 stage: 'Support',
                 channel: 'voice',
@@ -1030,6 +1083,7 @@ function createPrimeLocksmith(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-009-06',
+        customer_id: 'cust-009',
                 ts: addDays(baseDate, 120).toISOString(),
                 stage: 'Renewal',
                 channel: 'crm',
@@ -1064,6 +1118,7 @@ function createApexElectrical(): Customer {
         interactions: [
             createJourneyEvent({
                 id: 'int-010-01',
+        customer_id: 'cust-010',
                 ts: baseDate.toISOString(),
                 stage: 'Acquisition',
                 channel: 'voice',
@@ -1078,6 +1133,7 @@ function createApexElectrical(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-010-02',
+        customer_id: 'cust-010',
                 ts: addDays(baseDate, 2).toISOString(),
                 stage: 'Onboarding',
                 channel: 'voice',
@@ -1092,6 +1148,7 @@ function createApexElectrical(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-010-03',
+        customer_id: 'cust-010',
                 ts: addDays(baseDate, 60).toISOString(),
                 stage: 'Support',
                 channel: 'voice',
@@ -1106,6 +1163,7 @@ function createApexElectrical(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-010-04',
+        customer_id: 'cust-010',
                 ts: addDays(baseDate, 120).toISOString(),
                 stage: 'Renewal',
                 channel: 'voice',
@@ -1120,6 +1178,7 @@ function createApexElectrical(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-010-05',
+        customer_id: 'cust-010',
                 ts: addDays(baseDate, 125).toISOString(),
                 stage: 'Renewal',
                 channel: 'voice',
@@ -1134,6 +1193,7 @@ function createApexElectrical(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-010-06',
+        customer_id: 'cust-010',
                 ts: addDays(baseDate, 240).toISOString(),
                 stage: 'Renewal',
                 channel: 'voice',
@@ -1149,6 +1209,7 @@ function createApexElectrical(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-010-07',
+        customer_id: 'cust-010',
                 ts: addDays(baseDate, 250).toISOString(),
                 stage: 'Renewal',
                 channel: 'voice',
@@ -1163,6 +1224,7 @@ function createApexElectrical(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-010-08',
+        customer_id: 'cust-010',
                 ts: addDays(baseDate, 280).toISOString(),
                 stage: 'Renewal',
                 channel: 'voice',
@@ -1199,6 +1261,7 @@ function createSilverOakCatering(): Customer {
         interactions: [
             createJourneyEvent({
                 id: 'int-011-01',
+        customer_id: 'cust-011',
                 ts: baseDate.toISOString(),
                 stage: 'Acquisition',
                 channel: 'voice',
@@ -1213,6 +1276,7 @@ function createSilverOakCatering(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-011-02',
+        customer_id: 'cust-011',
                 ts: addDays(baseDate, 8).toISOString(),
                 stage: 'Onboarding',
                 channel: 'voice',
@@ -1227,6 +1291,7 @@ function createSilverOakCatering(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-011-03',
+        customer_id: 'cust-011',
                 ts: addDays(baseDate, 12).toISOString(),
                 stage: 'Onboarding',
                 channel: 'crm',
@@ -1241,6 +1306,7 @@ function createSilverOakCatering(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-011-04',
+        customer_id: 'cust-011',
                 ts: addDays(baseDate, 18).toISOString(),
                 stage: 'Onboarding',
                 channel: 'voice',
@@ -1255,6 +1321,7 @@ function createSilverOakCatering(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-011-05',
+        customer_id: 'cust-011',
                 ts: addDays(baseDate, 45).toISOString(),
                 stage: 'Support',
                 channel: 'voice',
@@ -1291,6 +1358,7 @@ function createPeakConstructionCo(): Customer {
         interactions: [
             createJourneyEvent({
                 id: 'int-012-01',
+        customer_id: 'cust-012',
                 ts: baseDate.toISOString(),
                 stage: 'Acquisition',
                 channel: 'crm',
@@ -1305,6 +1373,7 @@ function createPeakConstructionCo(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-012-02',
+        customer_id: 'cust-012',
                 ts: addDays(baseDate, 14).toISOString(),
                 stage: 'Acquisition',
                 channel: 'email',
@@ -1318,6 +1387,7 @@ function createPeakConstructionCo(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-012-03',
+        customer_id: 'cust-012',
                 ts: addDays(baseDate, 30).toISOString(),
                 stage: 'Acquisition',
                 channel: 'crm',
@@ -1334,6 +1404,7 @@ function createPeakConstructionCo(): Customer {
             }),
             createJourneyEvent({
                 id: 'int-012-04',
+        customer_id: 'cust-012',
                 ts: addDays(baseDate, 45).toISOString(),
                 stage: 'Acquisition',
                 channel: 'email',
@@ -1373,8 +1444,30 @@ function createJourneyEvent(data: Partial<JourneyEvent> & {
   summary: string;
   agent: string;
   customer: string;
+  customer_id: string;
 }): JourneyEvent {
   const conversationId = `conv-${Math.random().toString(36).substring(7)}`;
+
+  // Derive priority from tags and risk score
+  const tags = data.tags || [];
+  const score = data.score || { risk: 0, opportunity: 0 };
+  let priority: PriorityLevel = 'none';
+
+  if (tags.includes('risk') || score.risk >= 70) {
+    priority = score.risk >= 85 ? 'critical' : 'high';
+  } else if (tags.includes('opportunity') || score.opportunity >= 80) {
+    priority = 'medium';
+  } else if (score.risk >= 50) {
+    priority = 'low';
+  }
+
+  // Derive weight from priority and risk
+  let weight = 50;
+  if (priority === 'critical') weight = 90;
+  else if (priority === 'high') weight = 75;
+  else if (priority === 'medium') weight = 60;
+  else if (priority === 'low') weight = 40;
+
   return {
     durationSec: 0,
     tags: [],
@@ -1390,6 +1483,8 @@ function createJourneyEvent(data: Partial<JourneyEvent> & {
     aiInsights: [],
     recommendedActions: [],
     sentiment: 'neutral',
+    priority,
+    weight,
     ...data,
   };
 }
