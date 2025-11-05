@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { Customer } from './types';
+import ControlPanel from './ControlPanel';
 
 interface DashboardOverviewProps {
   customers: Customer[];
@@ -7,6 +8,35 @@ interface DashboardOverviewProps {
 }
 
 const DashboardOverview = ({ customers, onSelectCustomer }: DashboardOverviewProps) => {
+  const [dataSources, setDataSources] = useState<Record<string, boolean>>({
+    salesforce: true,
+    five9: true,
+    nice: false,
+    ehr: false,
+    crm: true,
+  });
+
+  const [cards, setCards] = useState<Array<{ id: string; name: string; items: string[] }>>([]);
+  const [quickFilter, setQuickFilter] = useState<string | null>(null);
+
+  const onToggleDataSource = (key: string) => {
+    setDataSources(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const onCreateCard = (name: string) => {
+    const id = `card-${Date.now().toString(36)}`;
+    setCards(prev => [{ id, name, items: [] }, ...prev]);
+  };
+
+  const onAddItemToCard = (cardId: string, item: string) => {
+    setCards(prev => prev.map(c => c.id === cardId ? { ...c, items: [...c.items, item] } : c));
+  };
+
+  const onQuickFilter = (filter: string) => {
+    setQuickFilter(filter);
+    // TODO: wire this to the timeline/filter system; for now just telemetry
+    console.log('Quick filter applied:', filter);
+  };
   const metrics = useMemo(() => {
     const totalCustomers = customers.length;
     const atRisk = customers.filter(c => c.riskLevel === 'high' || c.riskLevel === 'critical').length;
@@ -109,6 +139,49 @@ const DashboardOverview = ({ customers, onSelectCustomer }: DashboardOverviewPro
             </div>
           </div>
         </div>
+
+        {/* Control Panel */}
+        <ControlPanel
+          dataSources={dataSources}
+          onToggleDataSource={onToggleDataSource}
+          onCreateCard={onCreateCard}
+          onAddItemToCard={onAddItemToCard}
+          onQuickFilter={onQuickFilter}
+        />
+
+        {/* Active Quick Filter */}
+        {quickFilter && (
+          <div className="mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
+              <strong>Filter:</strong>
+              <span className="capitalize">{quickFilter}</span>
+            </div>
+          </div>
+        )}
+
+        {/* User-created Cards */}
+        {cards.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-sm font-semibold text-gray-800 mb-3">Your Cards</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              {cards.map(card => (
+                <div key={card.id} className="bg-white border rounded-lg p-3 text-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <strong className="text-gray-800">{card.name}</strong>
+                    <span className="text-xs text-gray-500">{card.id}</span>
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    {card.items.length === 0 ? <em>No items</em> : (
+                      <ul className="list-disc ml-4">
+                        {card.items.map((it, i) => <li key={i}>{it}</li>)}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Customer Grid */}
         <div className="mb-6">
