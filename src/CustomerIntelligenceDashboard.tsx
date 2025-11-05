@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import type { Customer, DashboardMetrics } from './types';
 import { generateDemoCustomers } from './demoDataEnhanced';
 import { getHealthScoreColor, formatCurrency } from './utils';
@@ -653,42 +653,80 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
           </div>
         </div>
 
-        {/* Elegant Overview */}
+        {/* Journey Overview - Redesigned */}
         <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6 shadow-elegant fade-in">
-          <div className="flex items-start justify-between mb-8">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 tracking-tight">Journey Overview</h2>
-              <p className="text-sm text-gray-500 mt-2 flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          {/* Header */}
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
-                {customer.interactions.length} touchpoints over {customer.tenure} month relationship
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-center px-6 py-4 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border border-emerald-200 hover-lift">
-                <div className="text-3xl font-black text-emerald-600">
-                  {sortedInteractions.filter(i => i.sentiment === 'very-positive' || i.sentiment === 'positive').length}
-                </div>
-                <div className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider mt-1">Positive</div>
               </div>
-              <div className="text-center px-6 py-4 bg-gradient-to-br from-red-50 to-rose-50 rounded-xl border border-red-200 hover-lift">
-                <div className="text-3xl font-black text-red-600">
-                  {sortedInteractions.filter(i => i.tags.some(t => ['risk', 'complaint', 'churn-signal'].includes(t))).length}
-                </div>
-                <div className="text-[10px] text-red-700 font-bold uppercase tracking-wider mt-1">Risk Signals</div>
-              </div>
-              <div className="text-center px-6 py-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 hover-lift">
-                <div className="text-3xl font-black text-blue-600">
-                  {sortedInteractions.filter(i => i.tags.some(t => ['opportunity', 'upsell', 'success'].includes(t))).length}
-                </div>
-                <div className="text-[10px] text-blue-700 font-bold uppercase tracking-wider mt-1">Opportunities</div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 tracking-tight">Journey Overview</h2>
+                <p className="text-sm text-gray-500 mt-0.5">
+                  {customer.interactions.length} touchpoints over {customer.tenure} month relationship
+                </p>
               </div>
             </div>
           </div>
 
+          {/* Stats Grid */}
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border-2 border-emerald-200 p-6 hover-lift">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center shadow-md">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-3xl font-black text-emerald-600">
+                    {sortedInteractions.filter(i => i.sentiment === 'very-positive' || i.sentiment === 'positive').length}
+                  </div>
+                </div>
+              </div>
+              <div className="text-xs text-emerald-700 font-bold uppercase tracking-wider">Positive Interactions</div>
+            </div>
+
+            <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl border-2 border-red-200 p-6 hover-lift">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center shadow-md">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-3xl font-black text-red-600">
+                    {sortedInteractions.filter(i => i.tags.some(t => ['risk', 'complaint', 'churn-signal'].includes(t))).length}
+                  </div>
+                </div>
+              </div>
+              <div className="text-xs text-red-700 font-bold uppercase tracking-wider">Risk Signals Detected</div>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200 p-6 hover-lift">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center shadow-md">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-3xl font-black text-blue-600">
+                    {sortedInteractions.filter(i => i.tags.some(t => ['opportunity', 'upsell', 'success'].includes(t))).length}
+                  </div>
+                </div>
+              </div>
+              <div className="text-xs text-blue-700 font-bold uppercase tracking-wider">Growth Opportunities</div>
+            </div>
+          </div>
+
           {/* Health Trend Visualization */}
-          <HealthTrendChart healthTrend={healthTrend} />
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 p-6">
+            <HealthTrendChart healthTrend={healthTrend} />
+          </div>
         </div>
 
         {/* Conditional View based on viewMode */}
@@ -719,7 +757,7 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
   );
 }
 
-// Health Trend Chart Component
+// Health Trend Chart Component - Enhanced
 function HealthTrendChart({ healthTrend }: { healthTrend: Array<{ date: Date; score: number; sentiment: string }> }) {
   if (healthTrend.length === 0) return null;
 
@@ -727,55 +765,120 @@ function HealthTrendChart({ healthTrend }: { healthTrend: Array<{ date: Date; sc
   const minScore = 0;
 
   return (
-    <div className="relative pt-2">
-      <div className="flex items-end justify-between h-24 gap-0.5">
-        {healthTrend.map((point, index) => {
-          const heightPercent = ((point.score - minScore) / (maxScore - minScore)) * 100;
-          const isFirst = index === 0;
-          const isLast = index === healthTrend.length - 1;
+    <div className="relative">
+      {/* Chart Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-sm">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          </div>
+          <span className="text-sm font-bold text-gray-900">Health Score Trend</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-sm"></div>
+            <span className="text-xs text-gray-600 font-medium">Healthy (80+)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-amber-500 rounded-full shadow-sm"></div>
+            <span className="text-xs text-gray-600 font-medium">At Risk (40-79)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-red-500 rounded-full shadow-sm"></div>
+            <span className="text-xs text-gray-600 font-medium">Critical (&lt;40)</span>
+          </div>
+        </div>
+      </div>
 
-          let barColor = 'bg-neutral-300';
-          if (point.score >= 80) barColor = 'bg-emerald-500';
-          else if (point.score >= 60) barColor = 'bg-neutral-400';
-          else if (point.score >= 40) barColor = 'bg-amber-500';
-          else barColor = 'bg-red-500';
+      {/* Chart */}
+      <div className="relative bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex items-end justify-between h-32 gap-1">
+          {healthTrend.map((point, index) => {
+            const heightPercent = ((point.score - minScore) / (maxScore - minScore)) * 100;
+            const isFirst = index === 0;
+            const isLast = index === healthTrend.length - 1;
+            const prevScore = index > 0 ? healthTrend[index - 1].score : point.score;
+            const isImproving = point.score > prevScore;
+            const isDeclining = point.score < prevScore;
 
-          return (
-            <div key={index} className="flex-1 flex flex-col items-center group relative">
-              <div
-                className={`w-full ${barColor} rounded-t transition-all hover:opacity-70 cursor-pointer`}
-                style={{ height: `${heightPercent}%` }}
-                title={`${point.date.toLocaleDateString()}: Score ${point.score}`}
-              >
-                {(isFirst || isLast || point.score < 50) && (
-                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-[10px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity text-neutral-900">
+            let barColor = 'from-gray-400 to-gray-500';
+            let barColorSolid = 'bg-gray-400';
+            if (point.score >= 80) {
+              barColor = 'from-emerald-400 to-emerald-600';
+              barColorSolid = 'bg-emerald-500';
+            } else if (point.score >= 60) {
+              barColor = 'from-blue-400 to-blue-600';
+              barColorSolid = 'bg-blue-500';
+            } else if (point.score >= 40) {
+              barColor = 'from-amber-400 to-amber-600';
+              barColorSolid = 'bg-amber-500';
+            } else {
+              barColor = 'from-red-400 to-red-600';
+              barColorSolid = 'bg-red-500';
+            }
+
+            return (
+              <div key={index} className="flex-1 flex flex-col items-center group relative">
+                {/* Score label on hover */}
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                  <div className={`${barColorSolid} text-white px-2 py-1 rounded-md text-xs font-bold shadow-lg whitespace-nowrap`}>
                     {point.score}
+                    {!isFirst && (
+                      <span className="ml-1 text-[10px]">
+                        {isImproving && '↑'}
+                        {isDeclining && '↓'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Bar */}
+                <div
+                  className={`w-full bg-gradient-to-t ${barColor} rounded-t-lg transition-all hover:shadow-lg cursor-pointer relative overflow-hidden group-hover:scale-105`}
+                  style={{ height: `${Math.max(heightPercent, 3)}%` }}
+                  title={`${point.date.toLocaleDateString()}: Score ${point.score}`}
+                >
+                  {/* Shine effect */}
+                  <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                </div>
+
+                {/* Date label */}
+                {(isFirst || isLast || index % Math.ceil(healthTrend.length / 6) === 0) && (
+                  <div className="text-[10px] text-gray-500 mt-2 whitespace-nowrap font-medium">
+                    {point.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </div>
                 )}
               </div>
-              {(isFirst || isLast) && (
-                <div className="text-[10px] text-neutral-500 mt-2 whitespace-nowrap uppercase tracking-wide">
-                  {point.date.toLocaleDateString('en-US', { month: 'short' })}
-                </div>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-      <div className="flex items-center justify-between mt-5 pt-4 border-t border-neutral-200">
-        <span className="text-[10px] text-neutral-500 font-medium uppercase tracking-wide">Health Score Trend</span>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-            <span className="text-[10px] text-neutral-600 font-medium">Healthy</span>
+
+      {/* Summary Stats */}
+      <div className="grid grid-cols-3 gap-3 mt-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-3 text-center">
+          <div className="text-xs text-gray-500 font-medium mb-1">Starting Score</div>
+          <div className="text-2xl font-black" style={{ color: getHealthScoreColor(healthTrend[0].score) }}>
+            {healthTrend[0].score}
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-            <span className="text-[10px] text-neutral-600 font-medium">At Risk</span>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-3 text-center">
+          <div className="text-xs text-gray-500 font-medium mb-1">Current Score</div>
+          <div className="text-2xl font-black" style={{ color: getHealthScoreColor(healthTrend[healthTrend.length - 1].score) }}>
+            {healthTrend[healthTrend.length - 1].score}
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            <span className="text-[10px] text-neutral-600 font-medium">Critical</span>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-3 text-center">
+          <div className="text-xs text-gray-500 font-medium mb-1">Change</div>
+          <div className={`text-2xl font-black ${
+            healthTrend[healthTrend.length - 1].score > healthTrend[0].score ? 'text-emerald-600' :
+            healthTrend[healthTrend.length - 1].score < healthTrend[0].score ? 'text-red-600' :
+            'text-gray-600'
+          }`}>
+            {healthTrend[healthTrend.length - 1].score > healthTrend[0].score && '+'}
+            {healthTrend[healthTrend.length - 1].score - healthTrend[0].score}
           </div>
         </div>
       </div>
@@ -783,7 +886,7 @@ function HealthTrendChart({ healthTrend }: { healthTrend: Array<{ date: Date; sc
   );
 }
 
-// Advanced Timeline Chart Component with Zoom & Pan (Direct Manipulation)
+// Redesigned Timeline - Simple, Intuitive, Card-Based
 function AdvancedTimelineChart({
   interactions,
   onInteractionClick,
@@ -802,255 +905,176 @@ function AdvancedTimelineChart({
   onInteractionClick: (id: string) => void;
   selectedId: string | null;
 }) {
-  const [zoom, setZoom] = useState(1); // Zoom level (1 = 100%, 2 = 200%, etc.)
-  const [panOffset, setPanOffset] = useState(0); // Pan offset in pixels
-  const [isPanning, setIsPanning] = useState(false);
-  const [panStart, setPanStart] = useState<{ x: number; offset: number } | null>(null);
-  const timelineRef = useRef<HTMLDivElement>(null);
-
   if (interactions.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-neutral-200 p-20 text-center">
-        <div className="text-neutral-400 text-sm font-medium">No interactions match the current filters</div>
+      <div className="bg-white rounded-2xl border border-gray-200 p-20 text-center shadow-elegant">
+        <div className="text-gray-400 text-sm font-medium">No interactions match the current filters</div>
       </div>
     );
   }
 
-  const firstDate = interactions[0].timestamp.getTime();
-  const lastDate = Math.max(...interactions.map(i => i.timestamp.getTime()), Date.now());
-  const totalDuration = lastDate - firstDate;
+  // Group interactions by month
+  const groupedByMonth = useMemo(() => {
+    const groups: Record<string, typeof interactions> = {};
+    interactions.forEach(interaction => {
+      const monthKey = interaction.timestamp.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      if (!groups[monthKey]) {
+        groups[monthKey] = [];
+      }
+      groups[monthKey].push(interaction);
+    });
+    return groups;
+  }, [interactions]);
 
-  const getPosition = (timestamp: Date) => {
-    if (totalDuration === 0) return 0;
-    return ((timestamp.getTime() - firstDate) / totalDuration) * 100;
-  };
-
-  // Zoom handler - anchored to mouse pointer
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    if (!timelineRef.current) return;
-
-    const rect = timelineRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const oldZoom = zoom;
-    const newZoom = Math.max(0.5, Math.min(5, oldZoom + (e.deltaY < 0 ? 0.1 : -0.1)));
-
-    // Calculate new pan offset to keep mouse position anchored
-    const zoomRatio = newZoom / oldZoom;
-    const newPanOffset = mouseX - (mouseX - panOffset) * zoomRatio;
-
-    setZoom(newZoom);
-    setPanOffset(newPanOffset);
-  };
-
-  // Pan handlers - click & drag
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return; // Only left click
-    setIsPanning(true);
-    setPanStart({ x: e.clientX, offset: panOffset });
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isPanning || !panStart) return;
-    const delta = e.clientX - panStart.x;
-    setPanOffset(panStart.offset + delta);
-  };
-
-  const handleMouseUp = () => {
-    setIsPanning(false);
-    setPanStart(null);
-  };
-
-  const handleMouseLeave = () => {
-    if (isPanning) {
-      setIsPanning(false);
-      setPanStart(null);
-    }
-  };
-
-  // Detect significant gaps
-  const gaps: Array<{ start: number; end: number; days: number }> = [];
-  for (let i = 0; i < interactions.length - 1; i++) {
-    const gapDays = Math.floor((interactions[i + 1].timestamp.getTime() - interactions[i].timestamp.getTime()) / (1000 * 60 * 60 * 24));
-    if (gapDays > 14) {
-      gaps.push({
-        start: getPosition(interactions[i].timestamp),
-        end: getPosition(interactions[i + 1].timestamp),
-        days: gapDays,
-      });
-    }
-  }
+  const monthKeys = Object.keys(groupedByMonth);
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-elegant fade-in">
-      {/* Timeline Header with Zoom Controls */}
-      <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+      {/* Timeline Header */}
+      <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-violet-50 to-indigo-50">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold text-gray-900 tracking-tight flex items-center gap-2">
-              <svg className="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              Interactive Timeline
+            <h3 className="text-xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              Timeline View
             </h3>
-            <p className="text-xs text-gray-500 mt-1 flex items-center gap-3">
-              <span className="font-semibold">{interactions.length} interactions</span>
-              <span>·</span>
-              <span>{Math.floor(totalDuration / (1000 * 60 * 60 * 24))} days span</span>
+            <p className="text-sm text-gray-600 mt-2 ml-13">
+              {interactions.length} interactions across {monthKeys.length} {monthKeys.length === 1 ? 'month' : 'months'}
             </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-600 font-medium">
-              <span className="font-bold text-violet-600">{Math.round(zoom * 100)}%</span> zoom
-            </div>
-            <div className="text-xs text-gray-500 bg-white border border-gray-200 rounded-lg px-4 py-2 flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-              </svg>
-              Scroll to zoom · Drag to pan
-            </div>
-            <button
-              onClick={() => { setZoom(1); setPanOffset(0); }}
-              className="px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-lg transition-all shadow-sm hover-lift"
-            >
-              Reset View
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Interactive Timeline Canvas with Zoom & Pan */}
-      <div
-        ref={timelineRef}
-        className="relative bg-white p-12 min-h-[450px] overflow-hidden"
-        style={{ cursor: isPanning ? 'grabbing' : 'grab' }}
-        onWheel={handleWheel}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-      >
-        {/* Transformed Timeline Content */}
-        <div
-          style={{
-            transform: `scaleX(${zoom}) translateX(${panOffset}px)`,
-            transformOrigin: 'left center',
-            transition: isPanning ? 'none' : 'transform 0.1s ease-out',
-          }}
-        >
-          {/* Base Timeline Line */}
-          <div className="absolute top-1/2 left-16 right-16 h-px bg-neutral-200 transform -translate-y-1/2" style={{ zIndex: 2 }}></div>
+      {/* Scrollable Timeline Content */}
+      <div className="p-8 max-h-[800px] overflow-y-auto">
+        <div className="space-y-8">
+          {monthKeys.map((monthKey, monthIndex) => {
+            const monthInteractions = groupedByMonth[monthKey];
 
-          {/* Gap Indicators */}
-          {gaps.map((gap, idx) => (
-          <div
-            key={idx}
-            className="absolute top-1/4 bottom-1/4 bg-red-50/50 border border-dashed border-red-200 rounded"
-            style={{
-              left: `calc(4rem + (100% - 8rem) * ${gap.start / 100})`,
-              right: `calc(4rem + (100% - 8rem) * ${(100 - gap.end) / 100})`,
-              zIndex: 3,
-            }}
-          >
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-600 text-white px-2 py-1 rounded-md text-[10px] font-medium whitespace-nowrap">
-              {gap.days}d gap
-            </div>
-          </div>
-        ))}
-
-        {/* Interaction Nodes */}
-        {interactions.map((interaction, index) => {
-          const position = getPosition(interaction.timestamp);
-          const isSelected = selectedId === interaction.id;
-          const hasRisk = interaction.tags.some(t => ['risk', 'complaint', 'churn-signal'].includes(t));
-          const hasOpportunity = interaction.tags.some(t => ['opportunity', 'upsell', 'success'].includes(t));
-          const isChampion = interaction.tags.includes('champion');
-
-          let nodeColor = 'bg-neutral-900 border-neutral-900 text-white';
-
-          if (hasRisk) {
-            nodeColor = 'bg-red-600 border-red-600 text-white';
-          } else if (hasOpportunity) {
-            nodeColor = 'bg-emerald-600 border-emerald-600 text-white';
-          }
-
-          const isAbove = index % 2 === 0;
-
-          return (
-            <div
-              key={interaction.id}
-              className="absolute group"
-              style={{
-                left: `calc(4rem + (100% - 8rem) * ${position / 100})`,
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
-                zIndex: isSelected ? 20 : 10,
-              }}
-            >
-              {/* Connecting Line to Timeline */}
-              <div
-                className={`absolute left-1/2 w-px bg-neutral-200 ${isAbove ? 'bottom-full mb-2' : 'top-full mt-2'}`}
-                style={{ height: '70px' }}
-              />
-
-              {/* Interactive Node */}
-              <button
-                type="button"
-                onClick={() => onInteractionClick(interaction.id)}
-                className={`relative ${nodeColor} ${
-                  isSelected ? 'w-11 h-11 ring-4 ring-neutral-900/20' : 'w-9 h-9'
-                } rounded-full border-2 transition-all duration-200 hover:scale-110 flex items-center justify-center text-base ${
-                  hasRisk ? 'animate-pulse' : ''
-                }`}
-                title={interaction.title}
-              >
-                {getInteractionIcon(interaction.type)}
-                {isChampion && (
-                  <span className="absolute -top-1 -right-1 text-xs">👑</span>
-                )}
-              </button>
-
-              {/* Hover Card */}
-              <div
-                className={`absolute ${isAbove ? 'bottom-full mb-20' : 'top-full mt-20'} left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-30`}
-              >
-                <div className="bg-white rounded-lg shadow-xl border border-neutral-200 p-4 min-w-[280px] max-w-[320px]">
-                  <div className="flex items-start gap-3 mb-3">
-                    <span className="text-2xl">{getInteractionIcon(interaction.type)}</span>
-                    <div className="flex-1">
-                      <div className="font-semibold text-sm mb-1 text-neutral-900">{interaction.title}</div>
-                      <div className="text-[10px] text-neutral-500 uppercase tracking-wide">
-                        {interaction.timestamp.toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </div>
+            return (
+              <div key={monthKey} className="relative">
+                {/* Month Header */}
+                <div className="sticky top-0 z-10 bg-gradient-to-r from-gray-50 to-white px-4 py-3 rounded-xl border border-gray-200 mb-6 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                      {monthInteractions.length}
                     </div>
-                  </div>
-                  <div className="text-xs text-neutral-600 line-clamp-2 mb-3 leading-relaxed">{interaction.summary}</div>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {interaction.tags.slice(0, 3).map(tag => (
-                      <span key={tag} className="px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
-                        {tag}
-                      </span>
-                    ))}
+                    <h4 className="text-lg font-bold text-gray-900">{monthKey}</h4>
                   </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
 
-          {/* Date Labels */}
-          <div className="absolute bottom-6 left-16 text-[10px] font-medium text-neutral-500 uppercase tracking-wide">
-            {new Date(firstDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-          </div>
-          <div className="absolute bottom-6 right-16 text-[10px] font-medium text-neutral-500 uppercase tracking-wide">
-            Today
-          </div>
+                {/* Interaction Cards */}
+                <div className="space-y-4 pl-6 border-l-2 border-gray-200">
+                  {monthInteractions.map((interaction) => {
+                    const isSelected = selectedId === interaction.id;
+                    const hasRisk = interaction.tags.some(t => ['risk', 'complaint', 'churn-signal'].includes(t));
+                    const hasOpportunity = interaction.tags.some(t => ['opportunity', 'upsell', 'success'].includes(t));
+                    const isChampion = interaction.tags.includes('champion');
+
+                    let borderColor = 'border-gray-200';
+                    let bgGradient = 'from-white to-gray-50';
+                    let iconBg = 'from-gray-600 to-gray-700';
+
+                    if (hasRisk) {
+                      borderColor = 'border-red-300';
+                      bgGradient = 'from-red-50 to-rose-50';
+                      iconBg = 'from-red-600 to-rose-600';
+                    } else if (hasOpportunity) {
+                      borderColor = 'border-emerald-300';
+                      bgGradient = 'from-emerald-50 to-green-50';
+                      iconBg = 'from-emerald-600 to-green-600';
+                    }
+
+                    return (
+                      <div key={interaction.id} className="relative -ml-6">
+                        {/* Timeline Dot */}
+                        <div className={`absolute left-0 top-6 w-4 h-4 rounded-full border-4 border-white shadow-md ${
+                          hasRisk ? 'bg-red-500' : hasOpportunity ? 'bg-emerald-500' : 'bg-gray-400'
+                        }`}></div>
+
+                        {/* Interaction Card */}
+                        <div className="ml-8">
+                          <button
+                            onClick={() => onInteractionClick(interaction.id)}
+                            className={`w-full text-left bg-gradient-to-br ${bgGradient} rounded-xl border-2 ${borderColor} p-6 hover-lift transition-all ${
+                              isSelected ? 'ring-4 ring-violet-300 shadow-xl scale-[1.02]' : 'shadow-sm'
+                            } group`}
+                          >
+                            <div className="flex items-start gap-4">
+                              {/* Icon */}
+                              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${iconBg} flex items-center justify-center text-2xl shadow-md flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                                {getInteractionIcon(interaction.type)}
+                              </div>
+
+                              {/* Content */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-4 mb-2">
+                                  <div className="flex items-center gap-2 flex-1">
+                                    <h5 className="font-bold text-gray-900 text-base">{interaction.title}</h5>
+                                    {isChampion && <span className="text-lg">👑</span>}
+                                  </div>
+                                  <div className="text-xs font-medium text-gray-500 whitespace-nowrap">
+                                    {interaction.timestamp.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                    {' · '}
+                                    {interaction.timestamp.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                                  </div>
+                                </div>
+
+                                <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
+                                  {interaction.summary}
+                                </p>
+
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="px-3 py-1 rounded-lg text-xs font-bold bg-white border border-gray-200 text-gray-700 capitalize">
+                                    {interaction.type.replace('-', ' ')}
+                                  </span>
+                                  {interaction.tags.slice(0, 4).map(tag => {
+                                    const isRiskTag = ['risk', 'complaint', 'churn-signal'].includes(tag);
+                                    const isOppTag = ['opportunity', 'upsell', 'success'].includes(tag);
+                                    return (
+                                      <span
+                                        key={tag}
+                                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
+                                          isRiskTag ? 'bg-red-100 text-red-700 border border-red-200' :
+                                          isOppTag ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
+                                          'bg-gray-100 text-gray-700 border border-gray-200'
+                                        }`}
+                                      >
+                                        {tag}
+                                      </span>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Arrow */}
+                              <svg className={`w-6 h-6 text-gray-400 group-hover:text-violet-600 transform group-hover:translate-x-1 transition-all flex-shrink-0 ${
+                                isSelected ? 'text-violet-600' : ''
+                              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Gap Indicator between months */}
+                {monthIndex < monthKeys.length - 1 && (
+                  <div className="mt-8 mb-4 flex items-center gap-3 pl-6">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-        {/* End Transformed Content */}
       </div>
     </div>
   );
