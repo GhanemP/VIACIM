@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "d3-array": "^3.2.4",
+    "d3-scale": "^4.0.2",
+    "d3-selection": "^3.0.0",
     "d3-zoom": "^3.0.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
