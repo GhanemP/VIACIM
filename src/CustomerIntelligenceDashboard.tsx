@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef } from 'react';
 import type { Customer, DashboardMetrics } from './types';
 import { generateDemoCustomers } from './demoDataEnhanced';
-import { getHealthScoreColor, formatCurrency, formatRelativeDate } from './utils';
+import { getHealthScoreColor, formatCurrency } from './utils';
 
 export default function CustomerIntelligenceDashboard() {
   const [customers] = useState<Customer[]>(generateDemoCustomers());
@@ -69,117 +69,197 @@ export default function CustomerIntelligenceDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-4xl font-extrabold mb-2">VIA - Customer Journey Intelligence</h1>
-              <p className="text-lg text-blue-100">Real-time customer health & engagement monitoring</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Elegant Header */}
+      <div className="relative overflow-hidden bg-white border-b border-gray-200 shadow-elegant">
+        <div className="absolute inset-0 bg-gradient-to-r from-violet-600/5 to-indigo-600/5"></div>
+        <div className="relative max-w-7xl mx-auto px-8 py-12">
+          <div className="flex justify-between items-start">
+            <div className="space-y-2 fade-in">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Customer Intelligence</h1>
+                  <p className="text-sm text-gray-500 font-medium">Real-time health & engagement analytics</p>
+                </div>
+              </div>
             </div>
-            <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all shadow-lg">
-              📊 Export Report
-            </button>
+            <div className="flex items-center gap-3 fade-in">
+              <button className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg transition-all hover-lift flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+                Filters
+              </button>
+              <button className="px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-lg transition-all shadow-lg hover-lift flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Export Report
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* KPI Dashboard */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="max-w-7xl mx-auto px-8 py-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 fade-in">
           <KPICard
             label="At Risk Customers"
             value={metrics.atRiskCount}
-            subtitle={`/ ${metrics.totalCustomers} total`}
-            color="red"
+            subtitle={`of ${metrics.totalCustomers} total`}
+            icon="🚨"
+            gradient="from-red-500 to-rose-600"
+            iconBg="from-red-500 to-rose-600"
           />
           <KPICard
             label="Total MRR"
             value={formatCurrency(metrics.totalMRR)}
-            color="default"
+            icon="💰"
+            gradient="from-violet-500 to-indigo-600"
+            iconBg="from-violet-500 to-indigo-600"
           />
           <KPICard
             label="Avg Health Score"
             value={metrics.avgHealthScore}
-            color="green"
+            icon="💚"
+            gradient="from-emerald-500 to-green-600"
+            iconBg="from-emerald-500 to-green-600"
           />
           <KPICard
             label="Active Opportunities"
             value={metrics.activeOpportunities}
-            color="blue"
+            icon="🎯"
+            gradient="from-blue-500 to-cyan-600"
+            iconBg="from-blue-500 to-cyan-600"
           />
         </div>
 
         {/* Customer List */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white rounded-2xl shadow-elegant-lg overflow-hidden border border-gray-100">
+          <div className="p-8 border-b border-gray-100">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">Customer Portfolio</h2>
-              <input
-                type="text"
-                placeholder="Search customers..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Customer Portfolio</h2>
+                <p className="text-sm text-gray-500 mt-1">{sortedCustomers.length} customers · {metrics.atRiskCount} require attention</p>
+              </div>
+              <div className="relative">
+                <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search customers..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all bg-gray-50 hover:bg-white focus:bg-white w-72 text-sm"
+                />
+              </div>
             </div>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th className="px-8 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
                     Customer
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
                     Stage
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
                     Health
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
                     MRR
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
                     Last Contact
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Risk
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50/50">
+                    Risk Level
                   </th>
+                  <th className="px-8 py-4 bg-gray-50/50"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-100">
                 {sortedCustomers.map(customer => (
                   <tr
                     key={customer.id}
                     onClick={() => setSelectedCustomerId(customer.id)}
-                    className="hover:bg-gray-50 cursor-pointer transition-colors"
+                    className="hover:bg-gradient-to-r hover:from-violet-50/30 hover:to-transparent cursor-pointer transition-all group"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-semibold text-gray-900">{customer.name}</div>
-                      <div className="text-sm text-gray-500">{customer.assignedTo}</div>
+                    <td className="px-8 py-5 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm shadow-md ${
+                          customer.healthScore >= 80 ? 'bg-gradient-to-br from-emerald-500 to-green-600' :
+                          customer.healthScore >= 60 ? 'bg-gradient-to-br from-blue-500 to-indigo-600' :
+                          customer.healthScore >= 40 ? 'bg-gradient-to-br from-amber-500 to-orange-600' :
+                          'bg-gradient-to-br from-red-500 to-rose-600'
+                        }`}>
+                          {customer.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                        </div>
+                        <div>
+                          <div className="font-bold text-gray-900">{customer.name}</div>
+                          <div className="text-xs text-gray-500">{customer.assignedTo}</div>
+                        </div>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap capitalize">
-                      {customer.stage.replace('-', ' ')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className="text-2xl font-bold"
-                        style={{ color: getHealthScoreColor(customer.healthScore) }}
-                      >
-                        {customer.healthScore}
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 capitalize">
+                        {customer.stage.replace('-', ' ')}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {customer.mrr > 0 ? `${formatCurrency(customer.mrr)}/mo` : '-'}
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="text-3xl font-black tracking-tight"
+                          style={{ color: getHealthScoreColor(customer.healthScore) }}
+                        >
+                          {customer.healthScore}
+                        </span>
+                        <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all"
+                            style={{
+                              width: `${customer.healthScore}%`,
+                              backgroundColor: getHealthScoreColor(customer.healthScore)
+                            }}
+                          />
+                        </div>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {customer.lastContactDays === 0 ? 'Today' : `${customer.lastContactDays} days ago`}
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className="font-bold text-gray-900">
+                        {customer.mrr > 0 ? formatCurrency(customer.mrr) : '-'}
+                      </div>
+                      {customer.mrr > 0 && (
+                        <div className="text-xs text-gray-500">per month</div>
+                      )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className={`text-sm font-medium ${
+                        customer.lastContactDays === 0 ? 'text-emerald-600' :
+                        customer.lastContactDays <= 7 ? 'text-gray-700' :
+                        customer.lastContactDays <= 14 ? 'text-amber-600' :
+                        'text-red-600'
+                      }`}>
+                        {customer.lastContactDays === 0 ? 'Today' : `${customer.lastContactDays}d ago`}
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 whitespace-nowrap">
                       <RiskBadge level={customer.riskLevel} />
+                    </td>
+                    <td className="px-8 py-5 whitespace-nowrap text-right">
+                      <svg className="w-5 h-5 text-gray-400 group-hover:text-violet-600 transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </td>
                   </tr>
                 ))}
@@ -192,393 +272,92 @@ export default function CustomerIntelligenceDashboard() {
   );
 }
 
-function KPICard({ 
-  label, 
-  value, 
-  subtitle, 
-  color = 'default' 
-}: { 
-  label: string; 
-  value: string | number; 
+function KPICard({
+  label,
+  value,
+  subtitle,
+  icon,
+  gradient,
+  iconBg
+}: {
+  label: string;
+  value: string | number;
   subtitle?: string;
-  color?: 'red' | 'green' | 'blue' | 'default';
+  icon: string;
+  gradient: string;
+  iconBg: string;
 }) {
-  const colorClasses = {
-    red: 'text-red-600',
-    green: 'text-green-600',
-    blue: 'text-blue-600',
-    default: 'text-gray-900',
-  };
-
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-      <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-        {label}
+    <div className="relative overflow-hidden bg-white rounded-2xl shadow-elegant border border-gray-100 hover-lift group">
+      {/* Gradient accent bar at top */}
+      <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${gradient}`}></div>
+
+      <div className="p-6">
+        <div className="flex items-start justify-between mb-4">
+          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${iconBg} flex items-center justify-center text-2xl shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
+            {icon}
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+            {label}
+          </div>
+          <div className="text-4xl font-black text-gray-900 tracking-tight">
+            {value}
+          </div>
+          {subtitle && (
+            <div className="text-sm text-gray-500 font-medium">{subtitle}</div>
+          )}
+        </div>
       </div>
-      <div className={`text-4xl font-extrabold ${colorClasses[color]}`}>
-        {value}
-      </div>
-      {subtitle && (
-        <div className="text-sm text-gray-500 mt-1">{subtitle}</div>
-      )}
+
+      {/* Subtle gradient overlay on hover */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`}></div>
     </div>
   );
 }
 
 function RiskBadge({ level }: { level: string }) {
-  const styles = {
-    low: 'bg-green-50 text-green-700 border-green-200',
-    medium: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    high: 'bg-orange-50 text-orange-700 border-orange-200',
-    critical: 'bg-red-50 text-red-700 border-red-200',
+  const config = {
+    low: {
+      className: 'bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700 border-emerald-200',
+      icon: '✓',
+      label: 'Low Risk'
+    },
+    medium: {
+      className: 'bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 border-amber-200',
+      icon: '◐',
+      label: 'Medium'
+    },
+    high: {
+      className: 'bg-gradient-to-r from-orange-50 to-red-50 text-orange-700 border-orange-200',
+      icon: '⚠',
+      label: 'High Risk'
+    },
+    critical: {
+      className: 'bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border-red-200',
+      icon: '🚨',
+      label: 'Critical'
+    },
   };
 
-  const labels = {
-    low: 'Low Risk',
-    medium: 'Medium',
-    high: 'High Risk',
-    critical: 'Critical',
-  };
+  const badge = config[level as keyof typeof config];
 
   return (
-    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${styles[level as keyof typeof styles]}`}>
-      {labels[level as keyof typeof labels]}
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border shadow-sm ${badge.className}`}>
+      <span>{badge.icon}</span>
+      {badge.label}
     </span>
   );
 }
 
-// Alternative Timeline Implementation - Available for future use
-// This horizontal timeline component provides an alternative visualization.
-
-export interface TimelineInteraction {
-  id: string;
-  timestamp: Date;
-  type: string;
-  title: string;
-  summary: string;
-  sentiment: string;
-  tags: string[];
-}
-
-export function HorizontalTimeline({
-  interactions,
-  onInteractionClick,
-  selectedId,
-}: {
-  interactions: TimelineInteraction[];
-  onInteractionClick: (id: string) => void;
-  selectedId: string | null;
-}) {
-  if (interactions.length === 0) return null;
-
-  const firstDate = interactions[0].timestamp.getTime();
-  const lastDate = Math.max(...interactions.map(i => i.timestamp.getTime()), Date.now());
-  const totalDuration = lastDate - firstDate;
-
-  // Calculate position for each interaction (0-100%)
-  const getPosition = (timestamp: Date) => {
-    if (totalDuration === 0) return 0;
-    return ((timestamp.getTime() - firstDate) / totalDuration) * 100;
-  };
-
-  // Detect gaps between interactions
-  const gaps: Array<{ start: number; end: number; days: number; severity: 'low' | 'medium' | 'high' }> = [];
-  for (let i = 0; i < interactions.length - 1; i++) {
-    const current = interactions[i];
-    const next = interactions[i + 1];
-    const gapDays = Math.floor((next.timestamp.getTime() - current.timestamp.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (gapDays > 7) {
-      gaps.push({
-        start: getPosition(current.timestamp),
-        end: getPosition(next.timestamp),
-        days: gapDays,
-        severity: gapDays > 60 ? 'high' : gapDays > 30 ? 'medium' : 'low',
-      });
-    }
-  }
-
-  // Identify milestone events (major wins)
-  const isMilestone = (interaction: TimelineInteraction) => {
-    const title = interaction.title.toLowerCase();
-    return (
-      title.includes('signed') ||
-      title.includes('contract') ||
-      title.includes('closed') ||
-      title.includes('upsell') ||
-      title.includes('🎉') ||
-      title.includes('💰') ||
-      title.includes('🎯') ||
-      (interaction.tags.includes('success') && interaction.sentiment === 'very-positive')
-    );
-  };
-
-  return (
-    <div className="my-8">
-      <div className="mb-4 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-blue-500 rounded-lg text-sm text-blue-900 shadow-sm">
-        <strong>💡 Interactive Timeline:</strong> Click any marker to preview details. Look for <span className="inline-block animate-pulse">✨ celebration effects</span> on major milestones!
-      </div>
-
-      {/* Timeline Stats Summary */}
-      <div className="mb-4 grid grid-cols-4 gap-3 text-center text-xs">
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-          <div className="font-bold text-lg text-gray-900">{interactions.length}</div>
-          <div className="text-gray-600">Total Interactions</div>
-        </div>
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-          <div className="font-bold text-lg text-green-600">
-            {interactions.filter(i => i.sentiment === 'very-positive' || i.sentiment === 'positive').length}
-          </div>
-          <div className="text-gray-600">Positive</div>
-        </div>
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-          <div className="font-bold text-lg text-red-600">
-            {interactions.filter(i => i.tags.some((t: string) => ['risk', 'complaint', 'churn-signal'].includes(t))).length}
-          </div>
-          <div className="text-gray-600">Risk Events</div>
-        </div>
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-          <div className="font-bold text-lg text-emerald-600">
-            {interactions.filter(i => i.tags.some((t: string) => ['opportunity', 'upsell', 'success'].includes(t))).length}
-          </div>
-          <div className="text-gray-600">Opportunities</div>
-        </div>
-      </div>
-
-      {/* Timeline Container */}
-      <div className="relative bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 rounded-xl px-12 py-24 min-h-[400px] shadow-inner overflow-x-auto border border-gray-200">
-        {/* Timeline Line with gradient progress */}
-        <div className="absolute top-1/2 left-12 right-12 h-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 transform -translate-y-1/2 rounded-full shadow-lg" >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 rounded-full opacity-50 blur-sm"></div>
-        </div>
-
-        {/* Gap Overlays */}
-        {gaps.map((gap, idx) => (
-          <div
-            key={idx}
-            className={`absolute top-1/4 bottom-1/4 rounded-lg border-2 border-dashed transition-all ${
-              gap.severity === 'high'
-                ? 'bg-red-100 border-red-400 opacity-30'
-                : gap.severity === 'medium'
-                ? 'bg-yellow-100 border-yellow-400 opacity-30'
-                : 'bg-gray-200 border-gray-400 opacity-20'
-            }`}
-            style={{
-              left: `calc(3rem + (100% - 6rem) * ${gap.start / 100})`,
-              right: `calc(3rem + (100% - 6rem) * ${(100 - gap.end) / 100})`,
-            }}
-          >
-            <div
-              className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xs font-bold whitespace-nowrap px-2 py-1 rounded ${
-                gap.severity === 'high'
-                  ? 'bg-red-200 text-red-900'
-                  : gap.severity === 'medium'
-                  ? 'bg-yellow-200 text-yellow-900'
-                  : 'bg-gray-300 text-gray-800'
-              }`}
-            >
-              ⚠️ {gap.days}d gap
-            </div>
-          </div>
-        ))}
-
-        {/* Interaction Markers */}
-        {interactions.map((interaction, index) => {
-          const position = getPosition(interaction.timestamp);
-          const isSelected = selectedId === interaction.id;
-          const sentiment = interaction.sentiment;
-          const milestone = isMilestone(interaction);
-
-          // Get color based on sentiment
-          let markerColor = 'bg-blue-500 border-blue-700';
-          let markerSize = 'w-6 h-6';
-
-          if (sentiment === 'very-positive') markerColor = 'bg-green-500 border-green-700';
-          else if (sentiment === 'positive') markerColor = 'bg-green-400 border-green-600';
-          else if (sentiment === 'negative') markerColor = 'bg-orange-500 border-orange-700';
-          else if (sentiment === 'very-negative') markerColor = 'bg-red-500 border-red-700';
-
-          const hasRiskTag = interaction.tags.some((t: string) =>
-            ['risk', 'complaint', 'churn-signal'].includes(t)
-          );
-          const hasOpportunityTag = interaction.tags.some((t: string) =>
-            ['opportunity', 'upsell', 'success'].includes(t)
-          );
-          const hasChampionTag = interaction.tags.includes('champion');
-
-          if (hasRiskTag) markerColor = 'bg-red-600 border-red-800 animate-pulse';
-          if (hasOpportunityTag) markerColor = 'bg-emerald-500 border-emerald-700';
-
-          // Milestones get larger markers with special effects
-          if (milestone) {
-            markerSize = 'w-8 h-8';
-            markerColor = 'bg-gradient-to-br from-yellow-400 to-orange-500 border-yellow-600';
-          }
-
-          // Alternate above/below for better spacing
-          const isAbove = index % 2 === 0;
-
-          return (
-            <div
-              key={interaction.id}
-              className="absolute group"
-              style={{
-                left: `calc(3rem + (100% - 6rem) * ${position / 100})`,
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
-              }}
-            >
-              {/* Vertical connector line */}
-              <div
-                className={`absolute left-1/2 w-0.5 bg-gray-400 ${
-                  isAbove ? 'bottom-full mb-3' : 'top-full mt-3'
-                }`}
-                style={{ height: '50px' }}
-              />
-
-              {/* Marker dot */}
-              <button
-                onClick={() => onInteractionClick(interaction.id)}
-                className={`relative z-10 ${markerSize} rounded-full border-4 transition-all transform hover:scale-150 cursor-pointer ${markerColor} ${
-                  isSelected ? 'scale-150 ring-4 ring-blue-300 shadow-lg' : ''
-                }`}
-                title={interaction.title}
-                aria-label={`View interaction: ${interaction.title}`}
-              >
-                {/* Pulse animation for risk items */}
-                {hasRiskTag && (
-                  <span className="absolute inset-0 rounded-full bg-red-400 animate-ping opacity-75" />
-                )}
-                {/* Glow effect for opportunities */}
-                {hasOpportunityTag && !milestone && (
-                  <span className="absolute inset-0 rounded-full bg-emerald-300 animate-pulse opacity-50" />
-                )}
-                {/* Celebration sparkles for milestones */}
-                {milestone && (
-                  <>
-                    <span className="absolute inset-0 rounded-full bg-yellow-200 animate-ping opacity-60" />
-                    <span className="absolute -top-1 -right-1 text-xs">✨</span>
-                    <span className="absolute -bottom-1 -left-1 text-xs">🎉</span>
-                  </>
-                )}
-                {/* Champion crown indicator */}
-                {hasChampionTag && (
-                  <span className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-sm">👑</span>
-                )}
-              </button>
-
-              {/* Preview card shows when marker is selected */}
-              {isSelected && (
-                <div
-                  className={`absolute left-1/2 transform -translate-x-1/2 z-50 ${
-                    isAbove ? 'bottom-full mb-24' : 'top-full mt-24'
-                  }`}
-                >
-                  <div className="bg-white rounded-xl shadow-2xl border-2 border-blue-500 p-4 min-w-[320px] max-w-[420px] animate-in fade-in zoom-in duration-200">
-                    <div className="flex items-start gap-3 mb-3">
-                      <span className="text-4xl">{getInteractionIcon(interaction.type)}</span>
-                      <div className="flex-1">
-                        <div className="font-bold text-base mb-1">{interaction.title}</div>
-                        <div className="text-xs text-gray-600 line-clamp-2">
-                          {interaction.summary}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-1 flex-wrap mb-3">
-                      {interaction.tags.slice(0, 4).map((tag: string) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 rounded text-[10px] font-semibold bg-gray-100 text-gray-700 border border-gray-300"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      <span className={`px-2 py-1 rounded text-[10px] font-semibold ${getSentimentBadgeColor(interaction.sentiment)}`}>
-                        {getSentimentEmoji(interaction.sentiment)} {interaction.sentiment}
-                      </span>
-                    </div>
-                    <div className="text-xs text-gray-500 mb-3">
-                      📅 {new Date(interaction.timestamp).toLocaleDateString('en-US', { 
-                        month: 'long', 
-                        day: 'numeric', 
-                        year: 'numeric',
-                        hour: 'numeric',
-                        minute: '2-digit'
-                      })}
-                    </div>
-                    <div className="text-xs font-semibold text-blue-600 text-center">
-                      Click marker again to open Evidence Locker with full details →
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-
-        {/* Date labels at start and end */}
-        <div className="absolute bottom-6 left-12 text-xs font-semibold text-gray-600 bg-white px-2 py-1 rounded shadow-sm">
-          {new Date(firstDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-        </div>
-        <div className="absolute bottom-6 right-12 text-xs font-semibold text-gray-600 bg-white px-2 py-1 rounded shadow-sm">
-          Today
-        </div>
-      </div>
-
-      {/* Legend */}
-      <div className="mt-6 bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-        <div className="text-xs font-bold text-gray-500 uppercase mb-3">Timeline Legend</div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-green-500 border-2 border-green-700" />
-            <span className="text-gray-700">Positive</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-blue-500 border-2 border-blue-700" />
-            <span className="text-gray-700">Neutral</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-orange-500 border-2 border-orange-700" />
-            <span className="text-gray-700">Negative</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-red-600 border-2 border-red-800 animate-pulse" />
-            <span className="text-gray-700">Risk/Crisis</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-emerald-500 border-2 border-emerald-700" />
-            <span className="text-gray-700">Opportunity</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative w-6 h-4 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 border-2 border-yellow-600">
-              <span className="absolute -top-1 -right-1 text-xs">✨</span>
-            </div>
-            <span className="text-gray-700">Milestone</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative w-4 h-4 rounded-full bg-green-500 border-2 border-green-700">
-              <span className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-xs">👑</span>
-            </div>
-            <span className="text-gray-700">Champion</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-12 h-3 rounded bg-red-100 border border-red-400 border-dashed opacity-60" />
-            <span className="text-gray-700">Gap</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack: () => void }) {
   const [selectedInteractionId, setSelectedInteractionId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'timeline' | 'list'>('timeline');
   const [enabledTypes, setEnabledTypes] = useState<Set<string>>(
     new Set(['call', 'email', 'meeting', 'support', 'product-usage', 'billing'])
-  );
-  const [enabledSentiments, setEnabledSentiments] = useState<Set<string>>(
-    new Set(['very-positive', 'positive', 'neutral', 'negative', 'very-negative'])
   );
 
   const toggleType = (type: string) => {
@@ -588,18 +367,6 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
         next.delete(type);
       } else {
         next.add(type);
-      }
-      return next;
-    });
-  };
-
-  const toggleSentiment = (sentiment: string) => {
-    setEnabledSentiments(prev => {
-      const next = new Set(prev);
-      if (next.has(sentiment)) {
-        next.delete(sentiment);
-      } else {
-        next.add(sentiment);
       }
       return next;
     });
@@ -619,10 +386,9 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
   const filteredInteractions = useMemo(() => {
     return sortedInteractions.filter(interaction => {
       if (!enabledTypes.has(interaction.type)) return false;
-      if (!enabledSentiments.has(interaction.sentiment)) return false;
       return true;
     });
-  }, [sortedInteractions, enabledTypes, enabledSentiments]);
+  }, [sortedInteractions, enabledTypes]);
 
   // Group interactions by lifecycle stage
   // Note: This grouping is prepared for future use (e.g., VerticalTimeline component)
@@ -690,34 +456,52 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Minimal Sticky Header - View Toggle Only */}
-      <div className="bg-white/95 backdrop-blur-sm border-b border-neutral-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-8 py-3">
+      <div className="glass border-b border-white/20 sticky top-0 z-40 shadow-elegant">
+        <div className="max-w-7xl mx-auto px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-neutral-600">
-              Customer Journey View
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onBack}
+                className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/50 transition-all text-gray-700 hover:text-gray-900"
+                title="Back to Dashboard"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div>
+                <div className="text-sm font-bold text-gray-900">{customer.name}</div>
+                <div className="text-xs text-gray-500">Customer Journey Analysis</div>
+              </div>
             </div>
-            <div className="flex items-center gap-0.5 bg-neutral-100/80 rounded-lg p-0.5">
+            <div className="flex items-center gap-0.5 bg-white/60 backdrop-blur-sm rounded-xl p-1 shadow-sm border border-gray-200">
               <button
                 onClick={() => setViewMode('timeline')}
-                className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
+                className={`px-5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
                   viewMode === 'timeline'
-                    ? 'bg-white text-neutral-900 shadow-sm'
-                    : 'text-neutral-600 hover:text-neutral-900'
+                    ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                 }`}
               >
-                📊 Timeline
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Timeline
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
+                className={`px-5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
                   viewMode === 'list'
-                    ? 'bg-white text-neutral-900 shadow-sm'
-                    : 'text-neutral-600 hover:text-neutral-900'
+                    ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                 }`}
               >
-                📋 List
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+                List
               </button>
             </div>
           </div>
@@ -727,64 +511,96 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-8 py-8">
         {/* Layer 1: Hero Card - Progressive Disclosure "So What?" */}
-        <div className="bg-white rounded-2xl border border-neutral-200 p-12 mb-8 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex items-baseline gap-6">
+        <div className="relative overflow-hidden bg-white rounded-3xl border border-gray-200 p-12 mb-8 shadow-elegant-lg hover-lift group fade-in">
+          {/* Gradient background accent */}
+          <div
+            className="absolute inset-0 opacity-5"
+            style={{
+              background: `linear-gradient(135deg, ${getHealthScoreColor(customer.healthScore)}15 0%, transparent 100%)`
+            }}
+          ></div>
+
+          <div className="relative">
+            <div className="flex items-start justify-between mb-8">
+              <div className="flex items-baseline gap-8">
                 {/* Massive Health Score - The Focal Point */}
-                <div
-                  className="text-8xl font-black tracking-tight"
-                  style={{ color: getHealthScoreColor(customer.healthScore) }}
-                >
-                  {customer.healthScore}
+                <div className="relative">
+                  <div
+                    className="text-9xl font-black tracking-tighter drop-shadow-sm"
+                    style={{ color: getHealthScoreColor(customer.healthScore) }}
+                  >
+                    {customer.healthScore}
+                  </div>
+                  {/* Circular progress indicator behind the number */}
+                  <svg className="absolute inset-0 w-full h-full -z-10 opacity-20" viewBox="0 0 100 100">
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="45"
+                      fill="none"
+                      stroke={getHealthScoreColor(customer.healthScore)}
+                      strokeWidth="2"
+                      strokeDasharray={`${customer.healthScore * 2.83} 283`}
+                      transform="rotate(-90 50 50)"
+                    />
+                  </svg>
                 </div>
-                <div className="flex flex-col gap-2">
+
+                <div className="flex flex-col gap-3 pt-4">
                   {/* State - Connected to Score */}
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl font-bold text-neutral-900 capitalize">
+                    <span className="text-3xl font-black text-gray-900 capitalize tracking-tight">
                       {customer.riskLevel} Risk
                     </span>
                     <RiskBadge level={customer.riskLevel} />
                   </div>
+
                   {/* Reason - The "Why" */}
-                  <div className="text-base text-neutral-600">
-                    <span className="font-semibold">{largestGap}d</span> max engagement gap
+                  <div className="flex flex-col gap-2">
+                    <div className="text-base text-gray-600 flex items-center gap-2">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span className="font-bold text-gray-900">{largestGap}</span> days max engagement gap
+                    </div>
                     {customer.lastContactDays > 7 && (
-                      <span className="text-red-600 font-semibold ml-2">
-                        · {customer.lastContactDays}d since last contact
-                      </span>
+                      <div className="flex items-center gap-2 text-red-600">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="font-bold">{customer.lastContactDays}</span> days since last contact
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="mt-6 pt-6 border-t border-neutral-200">
-                <div className="flex items-center gap-6 text-sm text-neutral-600">
-                  <span>
-                    <span className="font-semibold text-neutral-900">{customer.name}</span>
-                  </span>
-                  <span>·</span>
-                  <span className="capitalize">{customer.stage.replace('-', ' ')}</span>
-                  <span>·</span>
-                  <span>{formatCurrency(customer.mrr)}/mo</span>
-                  <span>·</span>
-                  <span>{customer.tenure}m tenure</span>
-                </div>
-              </div>
             </div>
-            <div className="flex items-center gap-3 ml-8">
-              <button
-                onClick={onBack}
-                className="px-4 py-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-lg transition-colors text-sm font-medium"
-              >
-                ← Back to Dashboard
-              </button>
+
+            {/* Account Details Grid */}
+            <div className="grid grid-cols-4 gap-6 pt-6 border-t border-gray-200">
+              <div className="space-y-1">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">Account</div>
+                <div className="font-bold text-gray-900">{customer.name}</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">Stage</div>
+                <div className="font-bold text-gray-900 capitalize">{customer.stage.replace('-', ' ')}</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">Monthly Revenue</div>
+                <div className="font-bold text-gray-900">{formatCurrency(customer.mrr)}</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">Tenure</div>
+                <div className="font-bold text-gray-900">{customer.tenure} months</div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Layer 3: Refined Filters Bar (with custom toggle switches) */}
-        <div className="bg-white rounded-xl border border-neutral-200 p-6 mb-6">
-          <div className="space-y-5">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6 shadow-elegant fade-in">
+          <div className="space-y-6">
             {/* Type Filters */}
             <div>
               <div className="text-xs font-semibold text-neutral-700 uppercase tracking-wide mb-3">Interaction Types</div>
@@ -819,42 +635,6 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
               </div>
             </div>
 
-            <div className="border-t border-neutral-200"></div>
-
-            {/* Sentiment Filters */}
-            <div>
-              <div className="text-xs font-semibold text-neutral-700 uppercase tracking-wide mb-3">Sentiment</div>
-              <div className="flex flex-wrap items-center gap-3">
-                {(['very-positive', 'positive', 'neutral', 'negative', 'very-negative'] as const).map(sentiment => (
-                  <button
-                    key={sentiment}
-                    onClick={() => toggleSentiment(sentiment)}
-                    className="flex items-center gap-2 group"
-                  >
-                    {/* Custom Toggle Switch */}
-                    <div
-                      className={`relative w-10 h-6 rounded-full transition-all duration-200 ${
-                        enabledSentiments.has(sentiment)
-                          ? 'bg-emerald-600'
-                          : 'bg-neutral-300'
-                      }`}
-                    >
-                      <div
-                        className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all duration-200 ${
-                          enabledSentiments.has(sentiment) ? 'translate-x-4' : 'translate-x-0'
-                        }`}
-                      />
-                    </div>
-                    <span className={`text-sm font-medium transition-colors ${
-                      enabledSentiments.has(sentiment) ? 'text-neutral-900' : 'text-neutral-500'
-                    }`}>
-                      {getSentimentEmoji(sentiment)} {sentiment.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <div className="border-t border-neutral-200 pt-4">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-neutral-600">
@@ -863,7 +643,6 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
                 <button
                   onClick={() => {
                     setEnabledTypes(new Set(['call', 'email', 'meeting', 'support', 'product-usage', 'billing']));
-                    setEnabledSentiments(new Set(['very-positive', 'positive', 'neutral', 'negative', 'very-negative']));
                   }}
                   className="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
                 >
@@ -875,32 +654,35 @@ function CustomerJourneyView({ customer, onBack }: { customer: Customer; onBack:
         </div>
 
         {/* Elegant Overview */}
-        <div className="bg-white rounded-xl border border-neutral-200 p-8 mb-6">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6 shadow-elegant fade-in">
           <div className="flex items-start justify-between mb-8">
             <div>
-              <h2 className="text-base font-semibold text-neutral-900 tracking-tight">Journey Overview</h2>
-              <p className="text-sm text-neutral-500 mt-1">
-                {customer.interactions.length} touchpoints · {customer.tenure} month relationship
+              <h2 className="text-xl font-bold text-gray-900 tracking-tight">Journey Overview</h2>
+              <p className="text-sm text-gray-500 mt-2 flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                {customer.interactions.length} touchpoints over {customer.tenure} month relationship
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="text-center px-5 py-3 bg-neutral-50 rounded-xl border border-neutral-200">
-                <div className="text-2xl font-semibold text-neutral-900">
+            <div className="flex items-center gap-4">
+              <div className="text-center px-6 py-4 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border border-emerald-200 hover-lift">
+                <div className="text-3xl font-black text-emerald-600">
                   {sortedInteractions.filter(i => i.sentiment === 'very-positive' || i.sentiment === 'positive').length}
                 </div>
-                <div className="text-[10px] text-neutral-500 font-medium uppercase tracking-wide mt-1">Positive</div>
+                <div className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider mt-1">Positive</div>
               </div>
-              <div className="text-center px-5 py-3 bg-neutral-50 rounded-xl border border-neutral-200">
-                <div className="text-2xl font-semibold text-red-600">
+              <div className="text-center px-6 py-4 bg-gradient-to-br from-red-50 to-rose-50 rounded-xl border border-red-200 hover-lift">
+                <div className="text-3xl font-black text-red-600">
                   {sortedInteractions.filter(i => i.tags.some(t => ['risk', 'complaint', 'churn-signal'].includes(t))).length}
                 </div>
-                <div className="text-[10px] text-neutral-500 font-medium uppercase tracking-wide mt-1">Risk</div>
+                <div className="text-[10px] text-red-700 font-bold uppercase tracking-wider mt-1">Risk Signals</div>
               </div>
-              <div className="text-center px-5 py-3 bg-neutral-50 rounded-xl border border-neutral-200">
-                <div className="text-2xl font-semibold text-emerald-600">
+              <div className="text-center px-6 py-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 hover-lift">
+                <div className="text-3xl font-black text-blue-600">
                   {sortedInteractions.filter(i => i.tags.some(t => ['opportunity', 'upsell', 'success'].includes(t))).length}
                 </div>
-                <div className="text-[10px] text-neutral-500 font-medium uppercase tracking-wide mt-1">Opportunity</div>
+                <div className="text-[10px] text-blue-700 font-bold uppercase tracking-wider mt-1">Opportunities</div>
               </div>
             </div>
           </div>
@@ -1100,21 +882,36 @@ function AdvancedTimelineChart({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-elegant fade-in">
       {/* Timeline Header with Zoom Controls */}
-      <div className="px-8 py-5 border-b border-neutral-200">
+      <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-neutral-900 tracking-tight">Interactive Timeline</h3>
-            <p className="text-xs text-neutral-500 mt-0.5">{interactions.length} interactions · {Math.floor(totalDuration / (1000 * 60 * 60 * 24))} days</p>
+            <h3 className="text-lg font-bold text-gray-900 tracking-tight flex items-center gap-2">
+              <svg className="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              Interactive Timeline
+            </h3>
+            <p className="text-xs text-gray-500 mt-1 flex items-center gap-3">
+              <span className="font-semibold">{interactions.length} interactions</span>
+              <span>·</span>
+              <span>{Math.floor(totalDuration / (1000 * 60 * 60 * 24))} days span</span>
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-neutral-500">
-              🖱️ Scroll to zoom · Drag to pan · Zoom: {Math.round(zoom * 100)}%
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-600 font-medium">
+              <span className="font-bold text-violet-600">{Math.round(zoom * 100)}%</span> zoom
+            </div>
+            <div className="text-xs text-gray-500 bg-white border border-gray-200 rounded-lg px-4 py-2 flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+              </svg>
+              Scroll to zoom · Drag to pan
+            </div>
             <button
               onClick={() => { setZoom(1); setPanOffset(0); }}
-              className="px-3 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors"
+              className="px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-lg transition-all shadow-sm hover-lift"
             >
               Reset View
             </button>
@@ -1279,8 +1076,8 @@ function InteractionListView({
   selectedId: string | null;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
-      <div className="divide-y divide-neutral-100">
+    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-elegant fade-in">
+      <div className="divide-y divide-gray-100">
         {interactions.map((interaction) => {
           const hasRisk = interaction.tags.some((t: string) => ['risk', 'complaint', 'churn-signal'].includes(t));
           const hasOpportunity = interaction.tags.some((t: string) => ['opportunity', 'upsell', 'success'].includes(t));
@@ -1361,190 +1158,7 @@ function InteractionListView({
   );
 }
 
-// Alternative Vertical Timeline Component - Available for future use
-// This component provides a stage-grouped vertical timeline view.
-export function VerticalTimeline({
-  groupedByStage,
-  onInteractionClick,
-  selectedId,
-}: {
-  groupedByStage: Record<string, Array<{
-    id: string;
-    timestamp: Date;
-    type: string;
-    title: string;
-    summary: string;
-    sentiment: string;
-    tags: string[];
-    stage: string;
-  }>>;
-  onInteractionClick: (id: string) => void;
-  selectedId: string | null;
-}) {
-  const stageOrder = ['prospect', 'onboarding', 'adoption', 'active', 'expansion', 'at-risk', 'churned'];
-  const stageLabels: Record<string, string> = {
-    prospect: '🎯 Prospect',
-    onboarding: '🚀 Onboarding',
-    adoption: '📈 Adoption',
-    active: '✅ Active',
-    expansion: '🌟 Expansion',
-    'at-risk': '⚠️ At Risk',
-    churned: '🚪 Churned',
-  };
-
-  const stageColors: Record<string, string> = {
-    prospect: 'border-blue-300 bg-blue-50',
-    onboarding: 'border-purple-300 bg-purple-50',
-    adoption: 'border-indigo-300 bg-indigo-50',
-    active: 'border-green-300 bg-green-50',
-    expansion: 'border-emerald-300 bg-emerald-50',
-    'at-risk': 'border-orange-300 bg-orange-50',
-    churned: 'border-red-300 bg-red-50',
-  };
-
-  return (
-    <div className="space-y-6">
-      {stageOrder.map(stage => {
-        const stageInteractions = groupedByStage[stage] || [];
-        if (stageInteractions.length === 0) return null;
-
-        return (
-          <div key={stage} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            {/* Stage Header */}
-            <div className={`px-6 py-3 border-l-4 ${stageColors[stage]}`}>
-              <div className="flex items-center justify-between">
-                <h3 className="font-bold text-gray-900">{stageLabels[stage] || stage}</h3>
-                <span className="text-sm text-gray-600">{stageInteractions.length} interactions</span>
-              </div>
-            </div>
-
-            {/* Interactions in this stage */}
-            <div className="p-6">
-              <div className="relative">
-                {/* Timeline line */}
-                <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200"></div>
-
-                <div className="space-y-6">
-                  {stageInteractions.map((interaction) => (
-                    <InteractionCard
-                      key={interaction.id}
-                      interaction={interaction}
-                      isSelected={selectedId === interaction.id}
-                      onClick={() => onInteractionClick(interaction.id)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 // Interaction Card Component
-function InteractionCard({
-  interaction,
-  isSelected,
-  onClick,
-}: {
-  interaction: {
-    id: string;
-    timestamp: Date;
-    type: string;
-    title: string;
-    summary: string;
-    sentiment: string;
-    tags: string[];
-  };
-  isSelected: boolean;
-  onClick: () => void;
-}) {
-  const hasRisk = interaction.tags.some((t: string) => ['risk', 'complaint', 'churn-signal'].includes(t));
-  const hasOpportunity = interaction.tags.some((t: string) => ['opportunity', 'upsell', 'success'].includes(t));
-  const isChampion = interaction.tags.includes('champion');
-
-  let borderColor = 'border-gray-200';
-  let bgColor = 'bg-white';
-
-  if (hasRisk) {
-    borderColor = 'border-red-300';
-    bgColor = 'bg-red-50';
-  } else if (hasOpportunity) {
-    borderColor = 'border-emerald-300';
-    bgColor = 'bg-emerald-50';
-  }
-
-  return (
-    <div className="relative pl-12">
-      {/* Timeline dot */}
-      <div className={`absolute left-4 top-4 w-5 h-5 rounded-full border-4 ${
-        hasRisk ? 'bg-red-500 border-red-200' :
-        hasOpportunity ? 'bg-emerald-500 border-emerald-200' :
-        'bg-blue-500 border-blue-200'
-      } shadow-sm z-10`}>
-        {isChampion && <span className="absolute -top-3 -right-3 text-sm">👑</span>}
-      </div>
-
-      {/* Card */}
-      <button
-        type="button"
-        onClick={onClick}
-        className={`w-full text-left border-2 ${borderColor} ${bgColor} rounded-lg p-4 transition-all hover:shadow-md ${
-          isSelected ? 'ring-2 ring-blue-400 shadow-lg scale-[1.02]' : ''
-        }`}
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">{getInteractionIcon(interaction.type)}</span>
-              <div>
-                <h4 className="font-bold text-gray-900">{interaction.title}</h4>
-                <p className="text-xs text-gray-500">
-                  {interaction.timestamp.toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </p>
-              </div>
-            </div>
-            <p className="text-sm text-gray-700 line-clamp-2">{interaction.summary}</p>
-
-            {/* Tags */}
-            <div className="flex flex-wrap gap-1 mt-3">
-              {interaction.tags.slice(0, 3).map((tag: string) => (
-                <span
-                  key={tag}
-                  className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700 border border-gray-300"
-                >
-                  {tag}
-                </span>
-              ))}
-              <span className={`px-2 py-0.5 rounded text-xs font-medium ${getSentimentBadgeColor(interaction.sentiment)}`}>
-                {getSentimentEmoji(interaction.sentiment)} {interaction.sentiment}
-              </span>
-            </div>
-          </div>
-
-          {/* Expand icon */}
-          <div className="flex-shrink-0">
-            <svg
-              className={`w-5 h-5 text-gray-400 transition-transform ${isSelected ? 'rotate-90' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </div>
-      </button>
-    </div>
-  );
-}
-
 // Enhanced Evidence Drawer Component with Collapsible Sections
 function EnhancedEvidenceDrawer({
   customer,
@@ -1887,124 +1501,6 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
     <div className="flex justify-between items-start gap-3 py-2 border-b border-neutral-100 last:border-b-0">
       <span className="text-xs font-medium text-neutral-500 uppercase tracking-wide flex-shrink-0">{label}</span>
       <span className="text-sm text-neutral-900 text-right">{value}</span>
-    </div>
-  );
-}
-
-// Evidence Locker Component - Available for future use
-// This modal component provides detailed interaction viewing.
-export interface EvidenceLockerProps {
-  interaction: {
-    id: string;
-    type: string;
-    timestamp: Date;
-    title: string;
-    summary: string;
-    sentiment: string;
-    tags: string[];
-    duration?: number;
-    participants: string[];
-    transcript?: string;
-    aiInsights?: Array<{ id: string; icon?: string; title: string; description: string }>;
-    recommendedActions?: Array<{ id: string; title: string }>;
-  };
-  onClose: () => void;
-}
-
-export function EvidenceLocker({ interaction, onClose }: EvidenceLockerProps) {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Interaction Details</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-4xl">{getInteractionIcon(interaction.type)}</span>
-            <div>
-              <div className="text-sm font-semibold text-gray-500 uppercase">
-                {interaction.type} • {formatRelativeDate(interaction.timestamp)}
-              </div>
-              <h3 className="text-2xl font-bold">{interaction.title}</h3>
-            </div>
-          </div>
-
-          <p className="text-lg text-gray-700 mb-4">{interaction.summary}</p>
-
-          <div className="flex gap-2 flex-wrap mb-6">
-            {interaction.tags.map((tag: string) => (
-              <span key={tag} className="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-700 border border-gray-300">
-                {tag}
-              </span>
-            ))}
-            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getSentimentBadgeColor(interaction.sentiment)}`}>
-              {getSentimentEmoji(interaction.sentiment)} {interaction.sentiment}
-            </span>
-          </div>
-
-          {interaction.duration && (
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <div className="text-xs text-gray-500 mb-1">Duration</div>
-                <div className="text-xl font-bold">{interaction.duration} min</div>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <div className="text-xs text-gray-500 mb-1">Participants</div>
-                <div className="text-sm font-semibold">{interaction.participants.join(', ')}</div>
-              </div>
-            </div>
-          )}
-
-          {interaction.transcript && (
-            <div className="mb-6 bg-gray-50 p-4 rounded-lg border-l-4 border-gray-400">
-              <h4 className="font-bold mb-2">🎙️ Call Transcript</h4>
-              <div className="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm whitespace-pre-wrap">
-                {interaction.transcript}
-              </div>
-            </div>
-          )}
-
-          {interaction.aiInsights && interaction.aiInsights.length > 0 && (
-            <div className="mb-6 bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
-              <h4 className="font-bold mb-3">🤖 AI Insights</h4>
-              <div className="space-y-2">
-                {interaction.aiInsights.map(insight => (
-                  <div key={insight.id} className="bg-white border border-purple-200 rounded-lg p-3 flex items-start gap-3">
-                    <span className="text-xl">{insight.icon}</span>
-                    <div className="flex-1">
-                      <div className="font-bold">{insight.title}</div>
-                      <div className="text-sm text-gray-600">{insight.description}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {interaction.recommendedActions && interaction.recommendedActions.length > 0 && (
-            <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
-              <h4 className="font-bold mb-3">✅ Recommended Actions</h4>
-              <div className="space-y-2">
-                {interaction.recommendedActions.map(action => (
-                  <button
-                    key={action.id}
-                    className="w-full text-left bg-green-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-green-700 transition-all"
-                  >
-                    → {action.title}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
