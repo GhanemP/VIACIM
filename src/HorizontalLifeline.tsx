@@ -48,6 +48,35 @@ const MARKER_CONFIG = {
 // S5: Clustering threshold
 const CLUSTER_THRESHOLD = 500; // pixels - cluster if markers closer than this
 
+const SCORE_WIDTH_CLASSES: Record<number, string> = {
+  0: 'w-[0%]',
+  5: 'w-[5%]',
+  10: 'w-[10%]',
+  15: 'w-[15%]',
+  20: 'w-[20%]',
+  25: 'w-[25%]',
+  30: 'w-[30%]',
+  35: 'w-[35%]',
+  40: 'w-[40%]',
+  45: 'w-[45%]',
+  50: 'w-[50%]',
+  55: 'w-[55%]',
+  60: 'w-[60%]',
+  65: 'w-[65%]',
+  70: 'w-[70%]',
+  75: 'w-[75%]',
+  80: 'w-[80%]',
+  85: 'w-[85%]',
+  90: 'w-[90%]',
+  95: 'w-[95%]',
+  100: 'w-[100%]',
+};
+
+const getScoreWidthClass = (value: number) => {
+  const clamped = Math.min(100, Math.max(0, Math.round(value / 5) * 5));
+  return SCORE_WIDTH_CLASSES[clamped] ?? 'w-[0%]';
+};
+
 const HorizontalLifeline = ({
   events,
   selectedEventId,
@@ -56,6 +85,7 @@ const HorizontalLifeline = ({
 }: HorizontalLifelineProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [dimensions, setDimensions] = useState({ width: 1000, height });
   const [transform, setTransform] = useState<d3.ZoomTransform>(d3.zoomIdentity);
   const [hoveredEvent, setHoveredEvent] = useState<JourneyEvent | null>(null);
@@ -194,6 +224,12 @@ const HorizontalLifeline = ({
       svg.on('.zoom', null);
     };
   }, [dimensions]);
+
+  useEffect(() => {
+    if (!tooltipRef.current) return;
+    tooltipRef.current.style.setProperty('--tooltip-x', `${tooltipPos.x + 10}px`);
+    tooltipRef.current.style.setProperty('--tooltip-y', `${tooltipPos.y + 10}px`);
+  }, [tooltipPos]);
 
   // v1.5: Enhanced marker rendering with better shapes and visual effects
   const renderMarker = (
@@ -366,7 +402,10 @@ const HorizontalLifeline = ({
   const centerY = innerHeight / 2;
 
   return (
-    <div ref={containerRef} className="relative w-full h-full bg-white rounded-lg border border-gray-200">
+    <div
+      ref={containerRef}
+      className="relative w-full h-full rounded-lg border border-gray-200 bg-gradient-to-br from-white via-slate-50 to-sky-50 shadow-lg overflow-hidden"
+    >
       {/* Timeline Canvas */}
       <svg
         ref={svgRef}
@@ -376,6 +415,26 @@ const HorizontalLifeline = ({
         role="application"
         aria-label="Customer journey timeline. Drag to pan, scroll to zoom."
       >
+          <defs>
+            <linearGradient id="lifelineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#f8fafc" />
+              <stop offset="50%" stopColor="#e0f2fe" />
+              <stop offset="100%" stopColor="#ede9fe" />
+            </linearGradient>
+            <radialGradient id="lifelineGlow" cx="50%" cy="0%" r="75%">
+              <stop offset="0%" stopColor="rgba(14,165,233,0.25)" />
+              <stop offset="40%" stopColor="rgba(59,130,246,0.12)" />
+              <stop offset="100%" stopColor="rgba(14,116,144,0)" />
+            </radialGradient>
+            <pattern id="lifelineGrid" width="36" height="36" patternUnits="userSpaceOnUse">
+              <path d="M36 0H0v36" fill="none" stroke="rgba(148,163,184,0.12)" strokeWidth="1" />
+              <path d="M18 0v36" fill="none" stroke="rgba(148,163,184,0.08)" strokeWidth="0.5" />
+              <path d="M0 18h36" fill="none" stroke="rgba(148,163,184,0.08)" strokeWidth="0.5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#lifelineGradient)" />
+        <rect width="100%" height="100%" fill="url(#lifelineGrid)" />
+        <rect width="100%" height={dimensions.height / 3} fill="url(#lifelineGlow)" opacity={0.6} />
         <g transform={`translate(${margin.left}, ${margin.top})`}>
           {/* Main timeline axis */}
           <line
@@ -383,7 +442,7 @@ const HorizontalLifeline = ({
             y1={centerY}
             x2={innerWidth}
             y2={centerY}
-            stroke="#d1d5db"
+            stroke="rgba(148, 163, 184, 0.35)"
             strokeWidth={2}
           />
 
@@ -394,13 +453,13 @@ const HorizontalLifeline = ({
 
             return (
               <g key={i} transform={`translate(${x}, ${centerY})`}>
-                <line y1={-5} y2={5} stroke="#9ca3af" strokeWidth={1} />
+                <line y1={-6} y2={6} stroke="rgba(148, 163, 184, 0.35)" strokeWidth={1} />
                 <text
                   y={25}
                   textAnchor="middle"
                   fontSize={11}
-                  fill="#6b7280"
-                  fontWeight={500}
+                  fill="#cbd5f5"
+                  fontWeight={600}
                 >
                   {tick.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </text>
@@ -590,11 +649,8 @@ const HorizontalLifeline = ({
       {/* Enhanced Tooltip v1.5 */}
       {hoveredEvent && (
         <div
-          className="fixed z-50 bg-gradient-to-br from-gray-900 to-gray-800 text-white text-xs rounded-xl shadow-2xl p-4 max-w-sm pointer-events-none border border-gray-700"
-          style={{
-            left: tooltipPos.x + 10,
-            top: tooltipPos.y + 10,
-          }}
+          ref={tooltipRef}
+          className="lifeline-tooltip z-50 bg-gradient-to-br from-gray-900 to-gray-800 text-white text-xs rounded-xl shadow-2xl p-4 max-w-sm pointer-events-none border border-gray-700"
         >
           <div className="font-bold text-sm mb-2 flex items-start gap-2">
             {hoveredEvent.tags.includes('risk') && <span className="text-red-400 text-base">⚠️</span>}
@@ -644,11 +700,10 @@ const HorizontalLifeline = ({
                   <div className="flex items-center gap-2">
                     <div className="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
                       <div 
-                        className={`h-full rounded-full ${
+                        className={`${getScoreWidthClass(hoveredEvent.score.risk)} h-full rounded-full ${
                           hoveredEvent.score.risk > 70 ? 'bg-red-500' :
                           hoveredEvent.score.risk > 40 ? 'bg-orange-500' : 'bg-yellow-500'
                         }`}
-                        style={{ width: `${hoveredEvent.score.risk}%` }}
                       />
                     </div>
                     <span className="text-xs font-bold text-red-400 w-6 text-right">
@@ -663,8 +718,7 @@ const HorizontalLifeline = ({
                   <div className="flex items-center gap-2">
                     <div className="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-green-500 rounded-full"
-                        style={{ width: `${hoveredEvent.score.opportunity}%` }}
+                        className={`${getScoreWidthClass(hoveredEvent.score.opportunity)} h-full bg-green-500 rounded-full`}
                       />
                     </div>
                     <span className="text-xs font-bold text-green-400 w-6 text-right">

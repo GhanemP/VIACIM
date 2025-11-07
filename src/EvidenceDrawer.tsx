@@ -10,7 +10,7 @@ interface EvidenceDrawerProps {
 type TabType = 'summary' | 'evidence' | 'compliance' | 'actions';
 
 const EvidenceDrawer = ({ event, isOpen, onClose }: EvidenceDrawerProps) => {
-  const [activeTab, setActiveTab] = useState<TabType>('summary');
+  const [activeTab, setActiveTab] = useState<TabType>('evidence');
 
   if (!isOpen) return null;
 
@@ -45,14 +45,15 @@ const EvidenceDrawer = ({ event, isOpen, onClose }: EvidenceDrawerProps) => {
       {/* Drawer */}
       <div className="fixed right-0 top-0 h-full w-[600px] bg-white shadow-2xl z-50 flex flex-col border-l border-gray-200">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
-          <h2 className="text-xl font-bold text-gray-900">Event Details</h2>
+        <div className="sticky top-0 z-10 gradient-header px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-white">Event Details</h2>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 hover:bg-white rounded-lg transition-colors"
+            className="btn-glass p-2"
             aria-label="Close drawer"
           >
-            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -88,26 +89,25 @@ const EvidenceDrawer = ({ event, isOpen, onClose }: EvidenceDrawerProps) => {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-gray-200 px-6 bg-white">
-              {[
-                { id: 'summary', label: 'Summary', icon: '📋' },
-                { id: 'evidence', label: 'Evidence', icon: '🔍' },
-                { id: 'compliance', label: 'Compliance', icon: '✓' },
-                { id: 'actions', label: 'Actions', icon: '⚡' }
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <span className="mr-2">{tab.icon}</span>
-                  {tab.label}
-                </button>
-              ))}
+            <div className="px-6 pt-4 bg-white">
+              <div className="tab-nav">
+                {[
+                  { id: 'summary', label: 'Summary', icon: '📋' },
+                  { id: 'evidence', label: 'Evidence', icon: '🔍' },
+                  { id: 'compliance', label: 'Compliance', icon: '✓' },
+                  { id: 'actions', label: 'Actions', icon: '⚡' }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id as TabType)}
+                    className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+                  >
+                    <span className="mr-2">{tab.icon}</span>
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Tab Content */}
@@ -179,6 +179,41 @@ const EvidenceDrawer = ({ event, isOpen, onClose }: EvidenceDrawerProps) => {
                     </div>
                   </div>
 
+                  {/* Revenue Impact */}
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200">
+                    <h4 className="text-sm font-bold text-purple-900 mb-3 flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Revenue Impact
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      {event.tags.includes('risk') && (
+                        <div className="bg-white/80 rounded p-3">
+                          <p className="text-xs text-gray-600 mb-1">Churn Risk</p>
+                          <p className="text-lg font-bold text-red-600">
+                            ${(event.score.risk * 5).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-gray-500">MRR at Risk</p>
+                        </div>
+                      )}
+                      {event.tags.includes('opportunity') && (
+                        <div className="bg-white/80 rounded p-3">
+                          <p className="text-xs text-gray-600 mb-1">Upsell Potential</p>
+                          <p className="text-lg font-bold text-green-600">
+                            ${(event.score.opportunity * 10).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-gray-500">Expansion ARR</p>
+                        </div>
+                      )}
+                      {!event.tags.includes('risk') && !event.tags.includes('opportunity') && (
+                        <div className="col-span-2 bg-white/80 rounded p-3 text-center">
+                          <p className="text-sm text-gray-600">No direct revenue impact detected</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Tags */}
                   {event.tags.length > 0 && (
                     <div>
@@ -201,15 +236,15 @@ const EvidenceDrawer = ({ event, isOpen, onClose }: EvidenceDrawerProps) => {
                     </div>
                   )}
 
-                  {/* AI Insights */}
+                  {/* Event Insights */}
                   {event.aiInsights && event.aiInsights.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-bold text-gray-900 mb-3">AI Insights</h4>
+                      <h4 className="text-sm font-bold text-gray-900 mb-3">Event Insights</h4>
                       <div className="space-y-2">
                         {event.aiInsights.map((insight) => (
-                          <div key={insight.id} className="bg-indigo-50 rounded-lg p-3 border border-indigo-100">
-                            <p className="text-sm font-semibold text-indigo-900 mb-1">{insight.title}</p>
-                            <p className="text-xs text-indigo-700">{insight.description}</p>
+                          <div key={insight.id} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-200 shadow-sm">
+                            <p className="text-sm font-semibold text-blue-900 mb-1">{insight.title}</p>
+                            <p className="text-xs text-blue-700">{insight.description}</p>
                           </div>
                         ))}
                       </div>
@@ -323,34 +358,33 @@ const EvidenceDrawer = ({ event, isOpen, onClose }: EvidenceDrawerProps) => {
                       <h4 className="text-sm font-bold text-gray-900">Recommended Next Actions</h4>
                       <div className="space-y-3">
                         {event.recommendedActions.map((action) => (
-                          <div key={action.id} className="bg-green-50 rounded-lg p-4 border border-green-200">
+                          <button
+                            key={action.id}
+                            type="button"
+                            className="w-full text-left btn-gradient-success rounded-lg p-4 transition-all group"
+                          >
                             <div className="flex items-start gap-3">
-                              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
+                              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/30 flex items-center justify-center">
                                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                 </svg>
                               </div>
                               <div className="flex-1">
-                                <p className="text-sm font-bold text-green-900 mb-1">{action.title}</p>
+                                <p className="text-sm font-bold text-white mb-1">{action.title}</p>
                                 {action.rationale && (
-                                  <p className="text-xs text-green-700 mb-2">{action.rationale}</p>
+                                  <p className="text-xs text-white/90 mb-2">{action.rationale}</p>
                                 )}
                                 {action.expectedImpact && (
-                                  <p className="text-xs text-gray-600 mb-2">
+                                  <p className="text-xs text-white/80 mb-2">
                                     <span className="font-medium">Expected Impact:</span> {action.expectedImpact}
                                   </p>
                                 )}
-                                {action.ctaLink && (
-                                  <a
-                                    href={action.ctaLink}
-                                    className="inline-block text-xs text-green-700 font-medium hover:text-green-800 underline"
-                                  >
-                                    Take Action →
-                                  </a>
-                                )}
                               </div>
+                              <svg className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
                             </div>
-                          </div>
+                          </button>
                         ))}
                       </div>
                     </>

@@ -8,7 +8,8 @@ type TelemetryEvent =
   | { type: 'FILTER_SEARCH_USED'; payload: { searchTerm: string } }
   | { type: 'FILTER_CHANNEL_CHANGED'; payload: { selectedChannels: string[] } }
   | { type: 'TIMELINE_ZOOM_PAN'; payload: { transform: { k: number; x: number; y: number } } }
-  | { type: 'FILTER_APPLY'; payload: { filterType: string; value: string | string[]; action?: string } };
+  | { type: 'FILTER_APPLY'; payload: { filterType: string; value: string | string[]; action?: string } }
+  | { type: 'QUICK_ACTION_TRIGGERED'; payload: { action: string; customerId: string } };
 
 export const trackEvent = (event: TelemetryEvent) => {
   // For now, we just log to the console.

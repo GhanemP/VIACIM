@@ -216,6 +216,44 @@ function createRiversidePlumbing(): Customer {
           createRecommendedAction('Schedule executive escalation call today'),
           createRecommendedAction('Prepare service recovery plan with compensation'),
         ],
+        evidence: [
+          {
+            start: 75,
+            end: 120,
+            text: "I'm paying $450 a month and getting nothing now.",
+            highlightReason: 'Customer signals billing-value mismatch',
+            speaker: 'Mike Thompson'
+          },
+          {
+            start: 165,
+            end: 205,
+            text: "Joe is getting all the emergency calls now.",
+            highlightReason: 'Competitor reference indicates urgent churn risk',
+            speaker: 'Mike Thompson'
+          }
+        ],
+        artifacts: [
+          {
+            type: 'audio',
+            url: 'https://example.com/audio/riverside-critical.mp3',
+            name: 'Crisis call recording',
+            mimeType: 'audio/mpeg',
+            size: 4_200_000
+          }
+        ],
+        revenueImpact: {
+          mrrAtRisk: 5400,
+          netRevenueRetention: 65,
+          changeNarrative: 'Projected churn within 30 days due to service degradation.'
+        },
+        scoreBreakdown: {
+          risk: [
+            { factor: 'Negative sentiment spike', impact: 35, description: 'Call classified as high-frustration' },
+            { factor: 'Engagement gap (120d)', impact: 30, description: 'Prolonged silence before complaint' },
+            { factor: 'Competitive threat mentioned', impact: 25, description: 'Direct comparison to Joe\'s Plumbing' }
+          ]
+        },
+        linkedInsightId: 'insight_001'
       }),
 
       // Resolution attempt
@@ -376,6 +414,19 @@ function createGoldenDragon(): Customer {
           createAIInsight('🏆', 'Customer loyalty significantly increased', 'Successful problem resolution strengthened relationship'),
         ],
         recommendedActions: [createRecommendedAction('Send reputation management upgrade proposal')],
+        revenueImpact: {
+          expansionArr: 2388,
+          netRevenueRetention: 118,
+          changeNarrative: 'Customer opted into premium reputation management after crisis.'
+        },
+        scoreBreakdown: {
+          opportunity: [
+            { factor: 'Explicit upsell request', impact: 40, description: 'Customer asked for premium add-on pricing.' },
+            { factor: 'Crisis resolved successfully', impact: 30, description: 'Trust increase post-resolution.' },
+            { factor: 'High engagement', impact: 20, description: 'Customer attends review sessions regularly.' }
+          ]
+        },
+        linkedInsightId: 'insight_003'
       }),
 
       createJourneyEvent({
@@ -949,6 +1000,17 @@ function createCoastalHVAC(): Customer {
                 score: { risk: 80, opportunity: 0 },
                 aiInsights: [createAIInsight('💳', 'Payment failure + silence', 'Customer may be experiencing cash flow issues')],
                 recommendedActions: [createRecommendedAction('Call customer immediately about payment')],
+                revenueImpact: {
+                  mrrAtRisk: 5940,
+                  changeNarrative: 'Payment failure jeopardizes entire annual contract value.'
+                },
+                scoreBreakdown: {
+                  risk: [
+                    { factor: 'Billing failure', impact: 45, description: 'Automated billing attempts declined.' },
+                    { factor: 'Customer unresponsive', impact: 25, description: 'No response to outreach for 72 hours.' },
+                    { factor: 'Seasonality cash strain', impact: 10, description: 'HVAC off-season identified in account notes.' }
+                  ]
+                }
             }),
             createJourneyEvent({
                 id: 'int-008-05',

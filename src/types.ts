@@ -53,6 +53,7 @@ export interface JourneyEvent {
     risk: number;
     opportunity: number;
   };
+  scoreBreakdown?: ScoreBreakdown;
   conversation_id: string;
   span_id: string;
   record: {
@@ -62,6 +63,8 @@ export interface JourneyEvent {
   };
   sentiment: 'very-positive' | 'positive' | 'neutral' | 'negative' | 'very-negative';
   participants: string[];
+  revenueImpact?: RevenueImpact;
+  linkedInsightId?: string;
 
   // S1: Extended schema fields
   transcript?: string; // full transcript text
@@ -72,6 +75,24 @@ export interface JourneyEvent {
   // Intelligence and actions
   aiInsights?: AIInsight[];
   recommendedActions?: RecommendedAction[];
+}
+
+export interface ScoreBreakdownEntry {
+  factor: string;
+  impact: number; // positive or negative contribution
+  description?: string;
+}
+
+export interface ScoreBreakdown {
+  risk?: ScoreBreakdownEntry[];
+  opportunity?: ScoreBreakdownEntry[];
+}
+
+export interface RevenueImpact {
+  mrrAtRisk?: number;
+  expansionArr?: number;
+  netRevenueRetention?: number;
+  changeNarrative?: string;
 }
 
 export type RiskLevel = 'low' | 'medium' | 'high' | 'critical';

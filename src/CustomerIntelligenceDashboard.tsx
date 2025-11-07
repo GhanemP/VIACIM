@@ -1,17 +1,18 @@
-import { useState, useMemo, useEffect } from 'react';
-import type { Customer } from './types';
-import { generateDemoCustomers } from './demoDataEnhanced';
+import { useEffect, useMemo, useState } from 'react';
 import DashboardOverview from './DashboardOverview';
-import CustomerJourneyView from './CustomerJourneyView';
 import CustomerLifelineView from './CustomerLifelineView';
+import InsightsView from './InsightsView';
+import { generateDemoCustomers } from './demoDataEnhanced';
+import type { Customer } from './types';
 import { trackEvent } from './telemetry';
 
-type ViewMode = 'journey' | 'lifeline';
+type DashboardMode = 'overview' | 'insights';
 
 export default function CustomerIntelligenceDashboard() {
   const [customers] = useState<Customer[]>(generateDemoCustomers());
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('journey');
+  const [dashboardMode, setDashboardMode] = useState<DashboardMode>('overview');
+  const [pendingInsightId, setPendingInsightId] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedCustomerId) {
@@ -30,45 +31,34 @@ export default function CustomerIntelligenceDashboard() {
 
   const handleBackToDashboard = () => {
     setSelectedCustomerId(null);
+    setPendingInsightId(null);
+    setDashboardMode('overview');
   };
 
-  const handleSwitchView = () => {
-    setViewMode(prev => prev === 'journey' ? 'lifeline' : 'journey');
-    trackEvent({ 
-      type: 'FILTER_APPLY', 
-      payload: { 
-        filterType: 'viewMode', 
-        value: viewMode === 'journey' ? 'lifeline' : 'journey' 
-      } 
-    });
+  const handleViewInsights = (insightId?: string) => {
+    setPendingInsightId(insightId ?? null);
+    setDashboardMode('insights');
   };
 
-  // Show overview when no customer selected, otherwise show selected view
+  if (dashboardMode === 'insights') {
+    return <InsightsView onBack={handleBackToDashboard} initialInsightId={pendingInsightId} />;
+  }
+
   if (!selectedCustomer) {
     return (
       <DashboardOverview
         customers={customers}
         onSelectCustomer={handleSelectCustomer}
-      />
-    );
-  }
-
-  // Render the selected view mode
-  if (viewMode === 'lifeline') {
-    return (
-      <CustomerLifelineView
-        customer={selectedCustomer}
-        onBack={handleBackToDashboard}
-        onSwitchView={handleSwitchView}
+        onViewInsights={handleViewInsights}
       />
     );
   }
 
   return (
-    <CustomerJourneyView
+    <CustomerLifelineView
       customer={selectedCustomer}
       onBack={handleBackToDashboard}
-      onSwitchView={handleSwitchView}
+      onOpenInsight={handleViewInsights}
     />
   );
 }

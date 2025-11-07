@@ -1,14 +1,17 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Customer, TimelineFilters, ChannelType, JourneyStage, TagType } from './types';
+import type { InsightDataL2 } from './insightTypes';
 import HorizontalLifeline from './HorizontalLifeline';
 import EvidenceDrawer from './EvidenceDrawer';
 import JourneyNarration from './JourneyNarration';
 import { trackEvent } from './telemetry';
+import { demoInsightsById } from './demoInsights';
 
 interface CustomerLifelineViewProps {
   customer: Customer;
   onBack: () => void;
   onSwitchView?: () => void;
+  onOpenInsight?: (insightId: string) => void;
 }
 
 // S6: URL state sync helpers
@@ -20,28 +23,33 @@ const useURLState = () => {
     return new URLSearchParams();
   });
 
-  const updateURL = (params: Record<string, string>) => {
-    const newParams = new URLSearchParams(urlParams);
-    Object.entries(params).forEach(([key, value]) => {
-      if (value) {
-        newParams.set(key, value);
-      } else {
-        newParams.delete(key);
+  const updateURL = useCallback((params: Record<string, string>) => {
+    setUrlParams(prevParams => {
+      const nextParams = new URLSearchParams(prevParams);
+      Object.entries(params).forEach(([key, value]) => {
+        if (value) {
+          nextParams.set(key, value);
+        } else {
+          nextParams.delete(key);
+        }
+      });
+
+      const prevString = prevParams.toString();
+      const nextString = nextParams.toString();
+
+      if (typeof window !== 'undefined' && nextString !== prevString) {
+        const nextUrl = nextString ? `${window.location.pathname}?${nextString}` : window.location.pathname;
+        window.history.replaceState({}, '', nextUrl);
       }
+
+      return nextString === prevString ? prevParams : nextParams;
     });
-
-    if (typeof window !== 'undefined') {
-      const newUrl = `${window.location.pathname}?${newParams.toString()}`;
-      window.history.replaceState({}, '', newUrl);
-    }
-
-    setUrlParams(newParams);
-  };
+  }, []);
 
   return { urlParams, updateURL };
 };
 
-const CustomerLifelineView = ({ customer, onBack, onSwitchView }: CustomerLifelineViewProps) => {
+const CustomerLifelineView = ({ customer, onBack, onSwitchView, onOpenInsight }: CustomerLifelineViewProps) => {
   const { urlParams, updateURL } = useURLState();
 
   // S6: Initialize state from URL
@@ -65,6 +73,19 @@ const CustomerLifelineView = ({ customer, onBack, onSwitchView }: CustomerLifeli
   });
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const linkedInsights = useMemo<InsightDataL2[]>(() => {
+    const ids = new Set<string>();
+    customer.interactions.forEach((interaction) => {
+      if (interaction.linkedInsightId) {
+        ids.add(interaction.linkedInsightId);
+      }
+    });
+
+    return Array.from(ids)
+      .map((id) => demoInsightsById[id])
+      .filter((insight): insight is InsightDataL2 => Boolean(insight));
+  }, [customer.interactions]);
 
   // Update URL when selection changes
   useEffect(() => {
@@ -171,67 +192,65 @@ const CustomerLifelineView = ({ customer, onBack, onSwitchView }: CustomerLifeli
     updateURL({ q: query });
   };
 
-  const getRiskColor = (level: string) => {
-    switch (level) {
-      case 'critical': return 'bg-red-100 text-red-800 border-red-200';
-      case 'high': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
-  const getHealthColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-blue-600';
-    if (score >= 40) return 'text-yellow-600';
-    if (score >= 20) return 'text-orange-600';
-    return 'text-red-600';
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-full px-6 py-4">
+    <div className="min-h-screen bg-gray-50">
+      {/* Vibrant Gradient Header */}
+      <header className="gradient-header sticky top-0 z-50">
+        <div className="px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <button
                 onClick={onBack}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="btn-glass p-2"
                 aria-label="Back to dashboard"
               >
-                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{customer.name}</h1>
-                <p className="text-sm text-gray-600">{customer.stage} • {customer.assignedTo}</p>
+                <h1 className="text-xl font-bold text-white">{customer.name}</h1>
+                <p className="text-sm text-white/90">{customer.stage} • {customer.assignedTo}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              {/* Metrics in Header */}
+              <div className="metric-card">
+                <div>
+                  <div className="text-lg font-bold text-white">{customer.healthScore}</div>
+                  <div className="text-xs text-white/80">Health</div>
+                </div>
+              </div>
+              <div className="metric-card">
+                <div>
+                  <div className="text-lg font-bold text-white">${customer.mrr.toLocaleString()}</div>
+                  <div className="text-xs text-white/80">MRR</div>
+                </div>
+              </div>
+              <div className="metric-card">
+                <div>
+                  <div className="text-lg font-bold text-white">${(customer.mrr * (customer.riskLevel === 'critical' ? 1 : customer.riskLevel === 'high' ? 0.5 : 0)).toLocaleString()}</div>
+                  <div className="text-xs text-white/80">ARR at Risk</div>
+                </div>
+              </div>
               {onSwitchView && (
                 <button
+                  type="button"
                   onClick={onSwitchView}
-                  className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                  className="btn-glass"
                   title="Switch to Journey View"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                  </svg>
-                  <span>Journey View</span>
+                  Journey View
                 </button>
               )}
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Health:</span>
-                <span className={`text-xl font-bold ${getHealthColor(customer.healthScore)}`}>
-                  {customer.healthScore}
-                </span>
-              </div>
-              <span className={`px-4 py-2 rounded-lg text-sm font-semibold border ${getRiskColor(customer.riskLevel)}`}>
-                {customer.riskLevel.toUpperCase()}
+              <span className={`
+                px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wide
+                ${customer.riskLevel === 'critical' ? 'badge-critical' :
+                  customer.riskLevel === 'high' ? 'badge-high' :
+                  customer.riskLevel === 'medium' ? 'badge-medium' : 'badge-low'}
+              `}>
+                {customer.riskLevel}
               </span>
             </div>
           </div>
@@ -240,6 +259,63 @@ const CustomerLifelineView = ({ customer, onBack, onSwitchView }: CustomerLifeli
 
       {/* Narration Bar */}
       <JourneyNarration events={filteredEvents} />
+
+      {linkedInsights.length > 0 && (
+        <section className="px-6 pt-4">
+          <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border border-indigo-100 rounded-xl shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl" aria-hidden="true">✨</span>
+                <h2 className="text-lg font-semibold text-indigo-900">Related AI Insights</h2>
+              </div>
+              <span className="text-xs font-semibold uppercase tracking-wide text-indigo-600">{linkedInsights.length} linked</span>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {linkedInsights.map((insight) => (
+                <article
+                  key={insight.id}
+                  className="h-full rounded-lg border border-indigo-100 bg-white/70 backdrop-blur-sm p-4 flex flex-col gap-3 hover:border-indigo-300 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-indigo-700">{insight.category}</span>
+                    {insight.badge && (
+                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full border border-indigo-200 text-indigo-600 bg-white">
+                        {insight.badge.label}: {insight.badge.value}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-sm font-bold text-indigo-900 leading-snug line-clamp-2" title={insight.title}>{insight.title}</h3>
+                  <p className="text-xs text-indigo-700 leading-relaxed line-clamp-3">{insight.problem}</p>
+                  <div className="mt-auto flex flex-wrap items-center gap-3 text-xs text-indigo-600">
+                    <span className="flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {new Date(insight.timestamp).toLocaleDateString()}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      {insight.evidence.tickets} tickets
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onOpenInsight?.(insight.id)}
+                    className="mt-2 inline-flex items-center justify-center gap-1 text-sm font-semibold text-indigo-700 hover:text-indigo-900"
+                  >
+                    Open in AI Insights
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Filters */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
