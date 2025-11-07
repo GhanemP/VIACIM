@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Customer, RiskLevel, JourneyStage } from './types';
 import ControlPanel from './ControlPanel';
+import CreateCustomerModal from './CreateCustomerModal';
 
 interface DashboardOverviewProps {
   customers: Customer[];
@@ -14,10 +15,17 @@ const DashboardOverview = ({ customers, onSelectCustomer }: DashboardOverviewPro
   const [selectedRiskLevels, setSelectedRiskLevels] = useState<RiskLevel[]>([]);
   const [selectedStages, setSelectedStages] = useState<JourneyStage[]>([]);
   const [dashboardView, setDashboardView] = useState<DashboardView>('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCreateCustomer = () => {
-    // TODO: Open modal or form to create new customer
-    alert('Create New Customer - Feature coming soon!\n\nThis will allow you to:\n- Input customer details\n- Upload call recordings or transcripts\n- Let AI analyze and map the customer journey');
+    setIsModalOpen(true);
+  };
+
+  const handleCustomerCreate = (customerData: Omit<Customer, 'id' | 'interactions'>) => {
+    // In a real app, this would make an API call to create the customer
+    console.log('Creating new customer:', customerData);
+    // For now, just log the data - the parent component would handle actual creation
+    alert(`Customer "${customerData.name}" created successfully!\n\nIn a production app, this would save to your database.`);
   };
 
   const handleToggleRiskLevel = (level: RiskLevel) => {
@@ -420,6 +428,13 @@ const DashboardOverview = ({ customers, onSelectCustomer }: DashboardOverviewPro
           })}
         </div>
       </div>
+
+      {/* Create Customer Modal */}
+      <CreateCustomerModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onCreateCustomer={handleCustomerCreate}
+      />
     </div>
   );
 };
